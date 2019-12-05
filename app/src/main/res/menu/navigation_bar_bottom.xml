@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+    android:id="@+id/bottomActionMessages"
+    android:icon="@drawable/ic_chat_bubble"
+    android:title="@string/messages"/>
+
+    <item
+        android:id="@+id/bottomActionFriends"
+        android:icon="@drawable/ic_friends"
+        android:title="@string/friends"/>
+
+    <item
+        android:id="@+id/bottomActionProfile"
+        android:icon="@drawable/ic_account_circle"
+        android:title="@string/profile"/>
+
+</menu>

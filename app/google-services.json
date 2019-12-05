@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "844024041368",
+    "firebase_url": "https://clique-kleek.firebaseio.com",
+    "project_id": "clique-kleek",
+    "storage_bucket": "clique-kleek.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:844024041368:android:f5e7311fb75b65de8565ed",
+        "android_client_info": {
+          "package_name": "com.matthew.clique"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "844024041368-r6a79baprucppmue33bp63dt3qlft15b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.matthew.clique",
+            "certificate_hash": "e7c2df9f08975e6230a51e389a63f3ad63ac7b0d"
+          }
+        },
+        {
+          "client_id": "844024041368-k62d0ip3lv3oqv4sn52j38qtpjv9fsbl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBcEHVL52UojLJvOxH6J2BawdOyDp3c2hs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "844024041368-k62d0ip3lv3oqv4sn52j38qtpjv9fsbl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

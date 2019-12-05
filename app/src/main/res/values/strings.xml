@@ -1,0 +1,39 @@
+<resources>
+    <string name="app_name">Clique.</string>
+    <string name="messages">Messages</string>
+    <string name="friends">Friends</string>
+    <string name="profile">Profile</string>
+    <string name="setup">Welcome.</string>
+    <string name="create">Create.</string>
+    <string name="add_contacts">Add Contacts</string>
+
+    <string name="setupDescription">What is your name?</string>
+
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="password_confirm">Confirm password</string>
+    <string name="first_name">First name</string>
+    <string name="last_name">Last name</string>
+
+    <string name="login">Login</string>
+    <string name="signUp">Sign up</string>
+    <string name="sign_out">Sign out</string>
+    <string name="create_account">Create account</string>
+    <string name="ready">Ready to go</string>
+
+    <string name="quote1">A world awaits.</string>
+    <string name="quote2">Friends at your fingertips.</string>
+
+    <string name="warning_empty">Missing fields</string>
+    <string name="warning_match">Passwords do not match</string>
+
+    <string name="error_login">Login unsuccessful</string>
+    <string name="error_register">Register unsuccessful</string>
+    <string name="error_setup">Setup unsuccessful</string>
+
+    <string name="new_message">New message</string>
+    <string name="search">Search</string>
+    <string name="add_friends">Add Friends</string>
+
+
+</resources>
