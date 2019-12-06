@@ -135,6 +135,45 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void initializeFragments() {
+        messagesFragment = new MessagesFragment();
+        friendsFragment = new FriendsFragment();
+        profileFragment = new ProfileFragment();
+
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+
+        fragmentTransaction.add(R.id.frameLayoutMain, messagesFragment);
+        fragmentTransaction.add(R.id.frameLayoutMain, friendsFragment);
+        fragmentTransaction.add(R.id.frameLayoutMain, profileFragment);
+
+        fragmentTransaction.hide(messagesFragment);
+        fragmentTransaction.hide(profileFragment);
+
+        fragmentTransaction.commit();
+    }
+
+    private void replaceFragment(Fragment fragment) {
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        if (fragment == messagesFragment) {
+            fragmentTransaction.hide(friendsFragment);
+            fragmentTransaction.hide(profileFragment);
+        }
+
+        if (fragment == friendsFragment) {
+            fragmentTransaction.hide(messagesFragment);
+            fragmentTransaction.hide(profileFragment);
+        }
+
+        if (fragment == profileFragment) {
+            fragmentTransaction.hide(messagesFragment);
+            fragmentTransaction.hide(friendsFragment);
+        }
+
+        fragmentTransaction.show(fragment);
+        fragmentTransaction.commit();
+
+    }
+
     private void sendTo(Context context, Class activity, boolean finish) {
         Intent intent = new Intent(context, activity);
         startActivity(intent);
