@@ -4,12 +4,15 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Message;
+import android.provider.ContactsContract;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -30,13 +33,15 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private FirebaseFirestore firebaseFirestore;
 
-    private Toolkit toolkit;
-
     private Toolbar toolbar;
     private int menuResource = R.menu.messages_menu; //default
 
+    private MessagesFragment messagesFragment;
+    private FriendsFragment friendsFragment;
+    private ProfileFragment profileFragment;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) { //initialize stuff
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -45,14 +50,10 @@ public class MainActivity extends AppCompatActivity {
 
         if (firebaseAuth.getCurrentUser() != null) {
             toolbar = findViewById(R.id.toolbarMain);
-            bottomNavigation = findViewById(R.id.bottomNavigationViewMain);
-
             setSupportActionBar(toolbar);
 
-            setNavigation();
-
-            toolkit = new Toolkit(this);
-
+            bottomNavigation = findViewById(R.id.bottomNavigationViewMain);
+            bottomNavigationControl();
         } else {
             sendTo(MainActivity.this, LoginActivity.class, true);
         }
@@ -106,43 +107,28 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //handles fragment navigation functions
-    private void setNavigation() {
-        getSupportActionBar().setTitle(R.string.messages);
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.frameLayoutMain, new MessagesFragment())
-                .commit(); //default is messages;
-
+    private void bottomNavigationControl() {
+        initializeFragments();
         bottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                Fragment selectedFragment = null;
                 switch (menuItem.getItemId()) {
                     case R.id.bottomActionMessages:
-                        selectedFragment = new MessagesFragment();
+                        replaceFragment(messagesFragment);
                         getSupportActionBar().setTitle(R.string.messages);
                         menuResource = R.menu.messages_menu;
-                        invalidateOptionsMenu();
                         break;
                     case R.id.bottomActionFriends:
-                        selectedFragment = new FriendsFragment();
+                        replaceFragment(friendsFragment);
                         getSupportActionBar().setTitle(R.string.friends);
                         menuResource = R.menu.friends_menu;
-                        invalidateOptionsMenu();
                         break;
                     case R.id.bottomActionProfile:
-                        selectedFragment = new ProfileFragment();
+                        replaceFragment(profileFragment);
                         getSupportActionBar().setTitle(R.string.profile);
                         menuResource = R.menu.profile_menu;
-                        invalidateOptionsMenu();
                         break;
                 }
-
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.frameLayoutMain, selectedFragment)
-                        .commit();
 
                 return true;
             }

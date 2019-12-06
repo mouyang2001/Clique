@@ -34,6 +34,9 @@
     <string name="new_message">New message</string>
     <string name="search">Search</string>
     <string name="add_friends">Add Friends</string>
+    <string name="call">Call</string>
+    <string name="video_call">Video call</string>
+    <string name="settings">Settings</string>
 
 
 </resources>
