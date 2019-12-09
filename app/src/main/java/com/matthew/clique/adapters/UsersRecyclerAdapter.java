@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
@@ -25,6 +26,7 @@ import com.matthew.clique.AddContactsActivity;
 import com.matthew.clique.R;
 import com.matthew.clique.models.User;
 
+import java.sql.Time;
 import java.util.HashMap;
 import java.util.List;
 
@@ -80,6 +82,8 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter<UsersRecyclerAdap
                                     holder.addButton.setImageDrawable(context.getDrawable(R.drawable.ic_add_accent));
                                 }
                             }
+                        } else {
+                            holder.addButton.setImageDrawable(context.getDrawable(R.drawable.ic_add_accent));
                         }
                     }
                 });
@@ -88,9 +92,15 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter<UsersRecyclerAdap
             @Override
             public void onClick(View v) {
 
+                FieldValue timestamp = FieldValue.serverTimestamp();
+
+                HashMap<String, Object> userMap = new HashMap<>();
+                userMap.put("user_id", userId);
+                userMap.put("time_added", timestamp);
+
                 HashMap<String, Object> friendMap = new HashMap<>();
                 friendMap.put("user_id", friendId);
-                friendMap.put("time_added", FieldValue.serverTimestamp());
+                friendMap.put("time_added", timestamp);
 
                 firebaseFirestore
                         .collection("Users/" + userId + "/Friends")
@@ -105,6 +115,13 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter<UsersRecyclerAdap
                                 }
                             }
                         });
+
+                firebaseFirestore
+                        .collection("Users/" + friendId + "/Friends")
+                        .document(userId)
+                        .set(userMap);
+
+                //Todo create a friend request potentially as a chat?
             }
         });
 

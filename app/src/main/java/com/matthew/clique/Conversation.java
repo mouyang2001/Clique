@@ -1,5 +1,6 @@
 package com.matthew.clique;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -7,7 +8,10 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.matthew.clique.R;
@@ -22,6 +26,8 @@ public class Conversation extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private FirebaseFirestore firebaseFirestore;
 
+    private String userId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,17 +36,18 @@ public class Conversation extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseFirestore = FirebaseFirestore.getInstance();
 
+        userId = firebaseAuth.getUid();
+
         toolbar = findViewById(R.id.toolbarConversation);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(getIntent().getStringExtra("friend_name"));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        //todo conversation activity retrieves conversation collection
-        Map<String, Object> conversation = new HashMap<>();
-        conversation.put("timestamp", FieldValue.serverTimestamp());
-        //todo should converstions be stored under the user or in a separate collection
-        //todo think of the implications of separate collection searching and matching hell
+        //todo conversation activity
+
+
+
     }
 
     @Override

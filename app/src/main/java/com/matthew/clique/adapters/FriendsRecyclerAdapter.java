@@ -14,16 +14,25 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.WriteBatch;
 import com.matthew.clique.Conversation;
 import com.matthew.clique.R;
+import com.matthew.clique.Toolkit;
 import com.matthew.clique.models.User;
 
+import org.w3c.dom.Document;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 public class FriendsRecyclerAdapter extends RecyclerView.Adapter<FriendsRecyclerAdapter.ViewHolder> {
 
@@ -34,6 +43,8 @@ public class FriendsRecyclerAdapter extends RecyclerView.Adapter<FriendsRecycler
     private FirebaseAuth firebaseAuth;
 
     private String userId;
+
+    private Toolkit tk;
 
     public FriendsRecyclerAdapter(List<User> usersList) {
         this.usersList = usersList;
@@ -50,6 +61,8 @@ public class FriendsRecyclerAdapter extends RecyclerView.Adapter<FriendsRecycler
 
         userId = firebaseAuth.getUid();
 
+        tk = new Toolkit(null);
+
         return new FriendsRecyclerAdapter.ViewHolder(view);
     }
 
@@ -58,6 +71,7 @@ public class FriendsRecyclerAdapter extends RecyclerView.Adapter<FriendsRecycler
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         holder.setIsRecyclable(false);
 
+        final String friendId = usersList.get(position).getUser_id();
         final String firstName = usersList.get(position).getFirst_name();
         final String lastName = usersList.get(position).getLast_name();
         holder.setUserData(firstName, lastName);
@@ -65,6 +79,9 @@ public class FriendsRecyclerAdapter extends RecyclerView.Adapter<FriendsRecycler
         holder.messageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                createConversation(userId, friendId);
+
                 Intent intent = new Intent(context, Conversation.class);
                 intent.putExtra("friend_name", firstName + " " +  lastName);
                 context.startActivity(intent);
@@ -98,5 +115,39 @@ public class FriendsRecyclerAdapter extends RecyclerView.Adapter<FriendsRecycler
         } else {
             return 0;
         }
+    }
+
+    private void createConversation(String userId, String friendId) {
+        FieldValue timestamp = FieldValue.serverTimestamp();
+        String conversationUID = tk.generateUID(20);
+
+        Map<String, Object> conversation = new HashMap<>();
+        conversation.put("conversation_id", conversationUID);
+        conversation.put("time_created", timestamp);
+
+        List<String> users = new ArrayList<>();
+        users.add(userId);
+        users.add(friendId);
+
+        conversation.put("users", users);
+
+        WriteBatch batch = firebaseFirestore.batch();
+
+        DocumentReference userReference = firebaseFirestore
+                .collection("Users/" + userId + "/Conversations")
+                .document(conversationUID);
+        batch.set(userReference, conversation);
+
+        DocumentReference friendReference = firebaseFirestore
+                .collection("Users/" + friendId + "/Conversations")
+                .document(conversationUID);
+        batch.set(friendReference, conversation);
+
+        DocumentReference conversationReference = firebaseFirestore
+                .collection("Conversations")
+                .document(conversationUID);
+        batch.set(conversationReference, conversation);
+
+        batch.commit();
     }
 }

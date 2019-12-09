@@ -65,6 +65,7 @@ public class FriendsFragment extends Fragment {
         friendsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         friendsRecyclerView.setAdapter(friendsRecyclerAdapter);
 
+        //Todo upgrade to real time?
         firebaseFirestore
                 .collection("Users/" + userId + "/Friends")
                 .get()

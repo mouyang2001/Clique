@@ -117,16 +117,19 @@ public class MainActivity extends AppCompatActivity {
                         replaceFragment(messagesFragment);
                         getSupportActionBar().setTitle(R.string.messages);
                         menuResource = R.menu.messages_menu;
+                        invalidateOptionsMenu();
                         break;
                     case R.id.bottomActionFriends:
                         replaceFragment(friendsFragment);
                         getSupportActionBar().setTitle(R.string.friends);
                         menuResource = R.menu.friends_menu;
+                        invalidateOptionsMenu();
                         break;
                     case R.id.bottomActionProfile:
                         replaceFragment(profileFragment);
                         getSupportActionBar().setTitle(R.string.profile);
                         menuResource = R.menu.profile_menu;
+                        invalidateOptionsMenu();
                         break;
                 }
 

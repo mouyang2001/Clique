@@ -10,10 +10,12 @@ import android.view.inputmethod.InputMethodManager;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.Random;
+
 public class Toolkit extends AppCompatActivity {
     private Activity activity;
 
-    public Toolkit(@NonNull Activity activity) {
+    public Toolkit(Activity activity) {
         this.activity = activity;
     }
 
@@ -32,5 +34,16 @@ public class Toolkit extends AppCompatActivity {
         NetworkInfo.State mobileConnection = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState();
         NetworkInfo.State wifiConnection = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState();
         return (mobileConnection == connectedState || wifiConnection == connectedState);
+    }
+
+    public String generateUID(int length) {
+        Random rand = new Random();
+        String values = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        StringBuilder stringBuilder = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            stringBuilder.append(values.charAt(rand.nextInt(values.length())));
+        }
+
+        return stringBuilder.toString();
     }
 }
