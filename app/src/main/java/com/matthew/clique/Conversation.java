@@ -7,6 +7,9 @@ import androidx.appcompat.widget.Toolbar;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -26,7 +29,10 @@ public class Conversation extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private FirebaseFirestore firebaseFirestore;
 
-    private String userId;
+    private String userId, conversationId;
+
+    private ImageView sendMessage;
+    private EditText messageField;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,8 +41,10 @@ public class Conversation extends AppCompatActivity {
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseFirestore = FirebaseFirestore.getInstance();
+        userId = firebaseAuth.getUid();
 
         userId = firebaseAuth.getUid();
+        conversationId = getIntent().getStringExtra("conversation_id");
 
         toolbar = findViewById(R.id.toolbarConversation);
         setSupportActionBar(toolbar);
@@ -44,10 +52,26 @@ public class Conversation extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
+        messageField = findViewById(R.id.editTextMessage);
+        sendMessage = findViewById(R.id.imageViewSendButton);
+        sendMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String text = messageField.toString().trim();
+                if (!text.isEmpty()) {
+                    HashMap<String, Object> messageMap = new HashMap<>();
+                    messageMap.put("conversation_id", conversationId);
+                    messageMap.put("sender", userId);
+                    messageMap.put("time_sent", FieldValue.serverTimestamp());
+
+                    firebaseFirestore
+                            .collection("Conversations/" + conversationId)
+                            .add(messageMap);
+                }
+            }
+        });
+
         //todo conversation activity
-
-
-
     }
 
     @Override

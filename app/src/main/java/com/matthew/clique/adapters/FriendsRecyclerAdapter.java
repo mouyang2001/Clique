@@ -20,6 +20,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
 import com.matthew.clique.Conversation;
 import com.matthew.clique.R;
@@ -79,11 +80,16 @@ public class FriendsRecyclerAdapter extends RecyclerView.Adapter<FriendsRecycler
         holder.messageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String conversationUID = tk.generateUID(20);
+                List<String> users = new ArrayList<>();
+                users.add(userId);
+                users.add(friendId);
 
-                createConversation(userId, friendId);
+                createConversation(conversationUID, users);
 
                 Intent intent = new Intent(context, Conversation.class);
                 intent.putExtra("friend_name", firstName + " " +  lastName);
+                intent.putExtra("conversation_id", conversationUID);
                 context.startActivity(intent);
             }
         });
@@ -117,31 +123,30 @@ public class FriendsRecyclerAdapter extends RecyclerView.Adapter<FriendsRecycler
         }
     }
 
-    private void createConversation(String userId, String friendId) {
+    private void createConversation(String conversationUID, List<String> usersList) {
         FieldValue timestamp = FieldValue.serverTimestamp();
-        String conversationUID = tk.generateUID(20);
+        String userId = usersList.get(0);
+        String friendId = usersList.get(1);
 
         Map<String, Object> conversation = new HashMap<>();
         conversation.put("conversation_id", conversationUID);
         conversation.put("time_created", timestamp);
+        conversation.put("users", usersList);
 
-        List<String> users = new ArrayList<>();
-        users.add(userId);
-        users.add(friendId);
-
-        conversation.put("users", users);
+        Map<String, Object> conversationMeta = new HashMap<>();
+        conversationMeta.put("conversation_id", conversationUID);
 
         WriteBatch batch = firebaseFirestore.batch();
 
         DocumentReference userReference = firebaseFirestore
-                .collection("Users/" + userId + "/Conversations")
-                .document(conversationUID);
-        batch.set(userReference, conversation);
+                .collection("Users/" + userId + "/Friends/")
+                .document(friendId);
+        batch.set(userReference, conversationMeta, SetOptions.merge());
 
         DocumentReference friendReference = firebaseFirestore
-                .collection("Users/" + friendId + "/Conversations")
-                .document(conversationUID);
-        batch.set(friendReference, conversation);
+                .collection("Users/" + friendId + "/Friends/")
+                .document(userId);
+        batch.set(friendReference, conversationMeta, SetOptions.merge());
 
         DocumentReference conversationReference = firebaseFirestore
                 .collection("Conversations")
