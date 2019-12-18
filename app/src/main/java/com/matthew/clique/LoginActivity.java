@@ -65,8 +65,6 @@ public class LoginActivity extends AppCompatActivity {
         String password = passwordField.getText().toString();
 
         toolkit.closeKeyboard();
-
-        //Todo space could be saved if you use firebase task.exception().toString();
         loginWarning.setText("");
         if (!email.isEmpty() && !password.isEmpty()) {
             loginProgress.setVisibility(View.VISIBLE);

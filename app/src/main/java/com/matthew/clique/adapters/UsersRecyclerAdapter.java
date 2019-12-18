@@ -120,8 +120,6 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter<UsersRecyclerAdap
                         .collection("Users/" + friendId + "/Friends")
                         .document(userId)
                         .set(userMap);
-
-                //Todo create a friend request potentially as a chat?
             }
         });
 

@@ -28,7 +28,7 @@ public class Toolkit extends AppCompatActivity {
         }
     }
 
-    public boolean isConnected() { //Todo might still work in event listeners
+    public boolean isConnected() {
         ConnectivityManager cm = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo.State connectedState = NetworkInfo.State.CONNECTED;
         NetworkInfo.State mobileConnection = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState();

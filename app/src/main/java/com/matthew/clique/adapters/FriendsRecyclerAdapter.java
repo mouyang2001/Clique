@@ -14,26 +14,21 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
-import com.matthew.clique.Conversation;
+import com.matthew.clique.ConversationActivity;
 import com.matthew.clique.R;
 import com.matthew.clique.Toolkit;
 import com.matthew.clique.models.User;
-
-import org.w3c.dom.Document;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 public class FriendsRecyclerAdapter extends RecyclerView.Adapter<FriendsRecyclerAdapter.ViewHolder> {
 
@@ -75,22 +70,37 @@ public class FriendsRecyclerAdapter extends RecyclerView.Adapter<FriendsRecycler
         final String friendId = usersList.get(position).getUser_id();
         final String firstName = usersList.get(position).getFirst_name();
         final String lastName = usersList.get(position).getLast_name();
+        final String fullName = firstName + " " + lastName;
         holder.setUserData(firstName, lastName);
         holder.messageButton.setImageDrawable(context.getDrawable(R.drawable.ic_message));
         holder.messageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String conversationUID = tk.generateUID(20);
-                List<String> users = new ArrayList<>();
-                users.add(userId);
-                users.add(friendId);
+                firebaseFirestore
+                        .collection("Users/" + userId + "/Friends")
+                        .document(friendId)
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    DocumentSnapshot documentSnapshot = task.getResult();
+                                    String conversationId = documentSnapshot.getString("conversation_id");
+                                    if (documentSnapshot.getString("conversation_id") == null) {
+                                        String conversationUID = tk.generateUID(20);
+                                        List<String> users = new ArrayList<>();
+                                        users.add(userId);
+                                        users.add(friendId);
 
-                createConversation(conversationUID, users);
+                                        createConversation(conversationUID, users);
+                                        sendToConversation(fullName, conversationUID);
+                                    } else {
+                                        sendToConversation(fullName, conversationId);
+                                    }
+                                }
+                            }
+                        });
 
-                Intent intent = new Intent(context, Conversation.class);
-                intent.putExtra("friend_name", firstName + " " +  lastName);
-                intent.putExtra("conversation_id", conversationUID);
-                context.startActivity(intent);
             }
         });
 
@@ -121,6 +131,13 @@ public class FriendsRecyclerAdapter extends RecyclerView.Adapter<FriendsRecycler
         } else {
             return 0;
         }
+    }
+
+    private void sendToConversation(String friendName, String conversationId) {
+        Intent intent = new Intent(context, ConversationActivity.class);
+        intent.putExtra("friend_name", friendName);
+        intent.putExtra("conversation_id", conversationId);
+        context.startActivity(intent);
     }
 
     private void createConversation(String conversationUID, List<String> usersList) {
