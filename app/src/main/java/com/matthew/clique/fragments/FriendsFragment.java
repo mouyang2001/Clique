@@ -41,8 +41,6 @@ public class FriendsFragment extends Fragment {
     private FirebaseFirestore firebaseFirestore;
     private FirebaseAuth firebaseAuth;
 
-    ViewPager viewpager;
-
     public FriendsFragment() {
         //empty constructor required
     }
@@ -77,6 +75,7 @@ public class FriendsFragment extends Fragment {
                                 friendsListRaw.add(document.getId());
                             }
 
+                            //this has to be nested inside
                             firebaseFirestore
                                     .collection("Users")
                                     .get()
@@ -99,6 +98,8 @@ public class FriendsFragment extends Fragment {
                         }
                     }
                 });
+
+
 
         return view;
     }

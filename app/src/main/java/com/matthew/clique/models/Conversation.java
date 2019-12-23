@@ -1,17 +1,22 @@
 package com.matthew.clique.models;
 
+import com.google.firebase.firestore.FieldValue;
+
+import java.lang.reflect.Field;
+import java.util.Date;
 import java.util.List;
 
 public class Conversation {
 
-    String conversation_id, time_created;
+    String conversation_id;
+    Date time_created;
     List<String> users;
 
     public Conversation() {
 
     }
 
-    public Conversation(String conversation_id, String time_created, List<String> users) {
+    public Conversation(String conversation_id, Date time_created, List<String> users) {
         this.conversation_id = conversation_id;
         this.time_created = time_created;
         this.users = users;
@@ -25,11 +30,11 @@ public class Conversation {
         this.conversation_id = conversation_id;
     }
 
-    public String getTime_created() {
+    public Date getTime_created() {
         return time_created;
     }
 
-    public void setTime_created(String time_created) {
+    public void setTime_created(Date time_created) {
         this.time_created = time_created;
     }
 

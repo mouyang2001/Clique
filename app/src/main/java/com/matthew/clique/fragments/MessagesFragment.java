@@ -78,8 +78,7 @@ public class MessagesFragment extends Fragment {
 //                        }
 //                    }
 //                });
-//
-//        //todo Optimization: this query might be very inefficient on data consumption
+
 //        firebaseFirestore
 //                .collection("Conversations")
 //                .addSnapshotListener(new EventListener<QuerySnapshot>() {
