@@ -4,6 +4,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -35,7 +37,7 @@ public class MessagesRecyclerAdapter extends RecyclerView.Adapter<MessagesRecycl
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_list_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.message_list_item, parent, false);
         context = parent.getContext();
 
         firebaseAuth = FirebaseAuth.getInstance();
@@ -53,15 +55,35 @@ public class MessagesRecyclerAdapter extends RecyclerView.Adapter<MessagesRecycl
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         holder.setIsRecyclable(false);
 
+        Message message = messageList.get(position);
 
+        String text = message.getMessage();
+        String senderId = message.getSender();
+        holder.setMessage(text, senderId);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
+        private TextView messageField, messageFieldUser;
+        private ImageView profileImage;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
+            messageField = itemView.findViewById(R.id.textViewMessageText);
+            messageFieldUser = itemView.findViewById(R.id.textViewMessageTextUser);
+            profileImage = itemView.findViewById(R.id.circleImageViewMessage);
+        }
 
+        public void setMessage(String text, String senderId) {
+            if (senderId.equals(userId)) {
+                profileImage.setVisibility(View.INVISIBLE);
+                messageField.setVisibility(View.INVISIBLE);
+                messageFieldUser.setVisibility(View.VISIBLE);
+                messageFieldUser.setText(text);
+            } else {
+                messageField.setText(text);
+            }
         }
     }
 

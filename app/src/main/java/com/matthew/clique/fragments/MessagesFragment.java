@@ -11,8 +11,27 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.matthew.clique.R;
+//import com.matthew.clique.adapters.ConversationsRecyclerAdapter;
+import com.matthew.clique.adapters.MessagesRecyclerAdapter;
+import com.matthew.clique.models.Conversation;
+import com.matthew.clique.models.Message;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MessagesFragment extends Fragment {
 
@@ -20,10 +39,67 @@ public class MessagesFragment extends Fragment {
 
     }
 
+    private FirebaseFirestore firebaseFirestore;
+    private FirebaseAuth firebaseAuth;
+
+    private String userId;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_messages, container, false);
+
+        //todo get messages
+        firebaseFirestore = FirebaseFirestore.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
+        userId = firebaseAuth.getUid();
+
+//        conversationList = new ArrayList<>();
+//        conversationsRecyclerAdapter = new ConversationsRecyclerAdapter(conversationList);
+//        RecyclerView conversationsRecyclerView = view.findViewById(R.id.recyclerViewMessages);
+//        conversationsRecyclerView.setHasFixedSize(true);
+//        conversationsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+//        conversationsRecyclerView.setAdapter(conversationsRecyclerAdapter);
+//
+//
+//        conversationIdList= new ArrayList<>();
+//
+//        firebaseFirestore
+//                .collection("Users/" + userId + "/Friends")
+//                .get()
+//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                        if (task.isSuccessful()) {
+//                            for (QueryDocumentSnapshot doc : task.getResult()) {
+//                                String conversationId = doc.get("conversation_id").toString();
+//                                conversationIdList.add(conversationId);
+//                            }
+//                        }
+//                    }
+//                });
+//
+//        //todo Optimization: this query might be very inefficient on data consumption
+//        firebaseFirestore
+//                .collection("Conversations")
+//                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+//                        if (!queryDocumentSnapshots.isEmpty()) {
+//                            for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
+//                                String documentId = doc.getDocument().getId();
+//                                for (String conversationId : conversationIdList) {
+//                                    if (documentId.equals(conversationId)) {
+//                                        Conversation conversation = doc.getDocument().toObject(Conversation.class);
+//                                        conversationList.add(conversation);
+//                                        conversationsRecyclerAdapter.notifyDataSetChanged();
+//                                    }
+//                                }
+//
+//                            }
+//                        }
+//                    }
+//                });
 
         return view;
     }

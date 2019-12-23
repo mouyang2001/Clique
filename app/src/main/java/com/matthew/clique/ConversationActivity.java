@@ -48,9 +48,9 @@ public class ConversationActivity extends AppCompatActivity {
     private ImageView sendMessage;
     private EditText messageField;
 
-    private RecyclerView conversationRecyclerView;
     private MessagesRecyclerAdapter messagesRecyclerAdapter;
     private List<Message> messageList;
+    private RecyclerView messagesRecyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,10 +74,10 @@ public class ConversationActivity extends AppCompatActivity {
         //RecyclerView setup
         messageList = new ArrayList<>();
         messagesRecyclerAdapter = new MessagesRecyclerAdapter(messageList);
-        conversationRecyclerView = findViewById(R.id.recyclerViewConversation);
-        conversationRecyclerView.setHasFixedSize(true);
-        conversationRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        conversationRecyclerView.setAdapter(messagesRecyclerAdapter);
+        messagesRecyclerView = findViewById(R.id.recyclerViewConversation);
+        messagesRecyclerView.setHasFixedSize(true);
+        messagesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        messagesRecyclerView.setAdapter(messagesRecyclerAdapter);
 
         //Adapter feed
         firebaseFirestore
@@ -112,10 +112,6 @@ public class ConversationActivity extends AppCompatActivity {
                 sendMessage(text);
             }
         });
-
-
-
-        //todo conversation activity
 
     }
 
