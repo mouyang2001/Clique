@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,7 +44,7 @@ public class ConversationActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private FirebaseFirestore firebaseFirestore;
 
-    private String userId, conversationId;
+    private String userId, conversationId, friendName;
 
     private ImageView sendMessage;
     private EditText messageField;
@@ -65,9 +66,11 @@ public class ConversationActivity extends AppCompatActivity {
         conversationId = getIntent().getStringExtra("conversation_id");
 
         //Toolbar setup
+        friendName = getIntent().getStringExtra("friend_name");
         toolbar = findViewById(R.id.toolbarConversation);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(getIntent().getStringExtra("friend_name"));
+        getSupportActionBar().setTitle("");
+        getSupportActionBar().setTitle(friendName);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
