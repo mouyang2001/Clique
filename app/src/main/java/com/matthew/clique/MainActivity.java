@@ -32,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth firebaseAuth;
     private FirebaseFirestore firebaseFirestore;
+    public String userName;
+    public String userId;
 
     private Toolbar toolbar;
     private int menuResource = R.menu.messages_menu; //default
@@ -48,12 +50,15 @@ public class MainActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseFirestore = FirebaseFirestore.getInstance();
 
+        userId = firebaseAuth.getUid();
+
         if (firebaseAuth.getCurrentUser() != null) {
             toolbar = findViewById(R.id.toolbarMain);
             setSupportActionBar(toolbar);
 
             bottomNavigation = findViewById(R.id.bottomNavigationViewMain);
             bottomNavigationControl();
+
         } else {
             sendTo(MainActivity.this, LoginActivity.class, true);
         }
@@ -149,7 +154,8 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.add(R.id.frameLayoutMain, friendsFragment);
         fragmentTransaction.add(R.id.frameLayoutMain, profileFragment);
 
-        fragmentTransaction.hide(messagesFragment);
+        //hides other fragments making messages default
+        fragmentTransaction.hide(friendsFragment);
         fragmentTransaction.hide(profileFragment);
 
         fragmentTransaction.commit();
