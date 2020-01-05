@@ -15,8 +15,11 @@ import android.os.Message;
 import android.provider.ContactsContract;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -52,12 +55,30 @@ public class MainActivity extends AppCompatActivity {
 
         userId = firebaseAuth.getUid();
 
-        if (firebaseAuth.getCurrentUser() != null) {
-            toolbar = findViewById(R.id.toolbarMain);
-            setSupportActionBar(toolbar);
+        toolbar = findViewById(R.id.toolbarMain);
+        setSupportActionBar(toolbar);
 
-            bottomNavigation = findViewById(R.id.bottomNavigationViewMain);
-            bottomNavigationControl();
+        bottomNavigation = findViewById(R.id.bottomNavigationViewMain);
+        bottomNavigationControl();
+
+        if (firebaseAuth.getCurrentUser() != null) {
+            firebaseFirestore.collection("Users")
+                    .document(userId)
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if (task.isSuccessful()) {
+                                DocumentSnapshot document = task.getResult();
+                                if (!document.exists()) {
+                                    sendTo(MainActivity.this, SetupActivity.class, true);
+                                }
+                            } else {
+                                String e = task.getException().getMessage();
+                                Toast.makeText(MainActivity.this, "", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
 
         } else {
             sendTo(MainActivity.this, LoginActivity.class, true);

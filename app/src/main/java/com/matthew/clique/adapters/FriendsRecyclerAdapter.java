@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,6 +30,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class FriendsRecyclerAdapter extends RecyclerView.Adapter<FriendsRecyclerAdapter.ViewHolder> {
 
@@ -71,7 +74,8 @@ public class FriendsRecyclerAdapter extends RecyclerView.Adapter<FriendsRecycler
         final String firstName = usersList.get(position).getFirst_name();
         final String lastName = usersList.get(position).getLast_name();
         final String fullName = firstName + " " + lastName;
-        holder.setUserData(firstName, lastName);
+        String profileImageUri = usersList.get(position).getProfile_image();
+        holder.setUserData(firstName, lastName, profileImageUri);
         holder.messageButton.setImageDrawable(context.getDrawable(R.drawable.ic_message));
         holder.messageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,17 +114,22 @@ public class FriendsRecyclerAdapter extends RecyclerView.Adapter<FriendsRecycler
 
         private TextView nameField;
         private ImageView messageButton;
+        private CircleImageView profileImage;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             nameField = itemView.findViewById(R.id.textViewFriendListName);
             messageButton = itemView.findViewById(R.id.imageViewFriendListAddButton);
+            profileImage = itemView.findViewById(R.id.circleImageViewFriendList);
         }
 
-        public void setUserData(String firstName, String lastName) {
+        public void setUserData(String firstName, String lastName, String profileUri) {
             String name = firstName +" "+ lastName;
             nameField.setText(name);
+            if (profileUri != null) {
+                Glide.with(context).load(profileUri).into(profileImage);
+            }
         }
     }
 

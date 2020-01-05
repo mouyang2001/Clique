@@ -24,6 +24,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -46,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import id.zelory.compressor.Compressor;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -101,6 +103,22 @@ public class ProfileFragment extends Fragment {
                     }
                 });
 
+        firebaseFirestore
+                .collection("Users")
+                .document(userId)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if (documentSnapshot.get("profile_image") != null) {
+                            String profileImageUri = documentSnapshot.get("profile_image").toString();
+                            Glide.with(getContext()).load(profileImageUri).into(profileImage);
+                        }
+
+
+                    }
+                });
+
 
         profileImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -146,13 +164,10 @@ public class ProfileFragment extends Fragment {
                 imagePath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
-                        Map<String, Object> imageMap = new HashMap<>();
-                        imageMap.put("image_url", uri.toString());
-                        imageMap.put("uploaded", FieldValue.serverTimestamp());
                         firebaseFirestore
-                                .collection("Users/" + userId + "/Pictures")
-                                .document("profile_picture")
-                                .set(imageMap)
+                                .collection("Users")
+                                .document(userId)
+                                .update("profile_image", uri.toString())
                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {

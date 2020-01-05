@@ -9,9 +9,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,6 +29,8 @@ import com.matthew.clique.models.User;
 
 import java.util.HashMap;
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ConversationsRecyclerAdapter extends RecyclerView.Adapter<ConversationsRecyclerAdapter.ViewHolder> {
 
@@ -77,7 +81,8 @@ public class ConversationsRecyclerAdapter extends RecyclerView.Adapter<Conversat
                                     String firstName = document.get("first_name").toString();
                                     String lastName = document.get("last_name").toString();
                                     String conversationName = firstName + " " + lastName;
-                                    holder.setData(conversationName);
+                                    String imageUri = document.get("profile_image").toString();
+                                    holder.setData(conversationName, imageUri);
                                 }
                             }
                         });
@@ -97,6 +102,7 @@ public class ConversationsRecyclerAdapter extends RecyclerView.Adapter<Conversat
 
         TextView conversationNameField;
         CardView conversationCardView;
+        CircleImageView profileImage;
 
         String conversationName;
 
@@ -105,11 +111,15 @@ public class ConversationsRecyclerAdapter extends RecyclerView.Adapter<Conversat
 
             conversationNameField = itemView.findViewById(R.id.textViewConversationListName);
             conversationCardView = itemView.findViewById(R.id.cardViewConversationList);
+            profileImage = itemView.findViewById(R.id.circleImageViewConversationList);
         }
 
-        public void setData(String conversationName) {
+        public void setData(String conversationName, @Nullable String profileUri) {
             this.conversationName = conversationName;
             conversationNameField.setText(this.conversationName);
+            if (profileUri != null) {
+                Glide.with(context).load(profileUri).into(profileImage);
+            }
         }
 
     }

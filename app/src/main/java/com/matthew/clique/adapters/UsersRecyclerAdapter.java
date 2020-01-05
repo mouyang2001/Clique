@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
@@ -29,6 +30,8 @@ import com.matthew.clique.models.User;
 import java.sql.Time;
 import java.util.HashMap;
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UsersRecyclerAdapter extends RecyclerView.Adapter<UsersRecyclerAdapter.ViewHolder> {
 
@@ -66,7 +69,9 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter<UsersRecyclerAdap
         final String friendId = usersList.get(position).getUser_id();
         String firstName = usersList.get(position).getFirst_name();
         String lastName = usersList.get(position).getLast_name();
-        holder.setUserData(firstName, lastName);
+        String profileImage = usersList.get(position).getProfile_image();
+        String fullName = firstName + lastName;
+        holder.setUserData(fullName, profileImage);
 
         firebaseFirestore
                 .collection("Users/" + userId + "/Friends")
@@ -129,17 +134,21 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter<UsersRecyclerAdap
 
         private TextView nameField;
         private ImageView addButton;
+        private CircleImageView profileImage;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             nameField = itemView.findViewById(R.id.textViewFriendListName);
             addButton = itemView.findViewById(R.id.imageViewFriendListAddButton);
+            profileImage = itemView.findViewById(R.id.circleImageViewFriendList);
         }
 
-        public void setUserData(String firstName, String lastName) {
-            String name = firstName +" "+ lastName;
+        public void setUserData(String name, String profileUri) {
             nameField.setText(name);
+            if (profileUri != null) {
+                Glide.with(context).load(profileUri).into(profileImage);
+            }
         }
     }
 
