@@ -69,24 +69,26 @@ public class MessagesFragment extends Fragment {
         conversationIdList= new ArrayList<>();
 
         firebaseFirestore
-                .collection("Users/" + userId + "/Friends")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                .collection("Conversations")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot doc : task.getResult()) {
-                                if (doc.get("conversation_id") != null) {
-                                    String conversationId = doc.get("conversation_id").toString();
-                                    conversationIdList.add(conversationId);
-                                }
-                            }
+                    public void onEvent(@Nullable final QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                        firebaseFirestore
+                                .collection("Users/" + userId + "/Friends")
+                                .get()
+                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        if (task.isSuccessful()) {
+                                            for (QueryDocumentSnapshot doc : task.getResult()) {
+                                                if (doc.get("conversation_id") != null) {
+                                                    String conversationId = doc.get("conversation_id").toString();
+                                                    conversationIdList.add(conversationId);
+                                                }
+                                            }
 
-                            firebaseFirestore
-                                    .collection("Conversations")
-                                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                        @Override
-                                        public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                                            //logic flipped so bug might occur
+
                                             if (!queryDocumentSnapshots.isEmpty()) {
                                                 for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
                                                     String documentId = doc.getDocument().getId();
@@ -100,11 +102,14 @@ public class MessagesFragment extends Fragment {
 
                                                 }
                                             }
+
                                         }
-                                    });
-                        }
+                                    }
+                                });
+
                     }
                 });
+
 
         return view;
     }

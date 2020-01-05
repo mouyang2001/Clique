@@ -38,9 +38,23 @@
                 android:layout_marginStart="16dp"
                 android:text="@string/first_name"
                 android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toBottomOf="@+id/circleImageViewConversationList"
                 app:layout_constraintStart_toEndOf="@+id/circleImageViewConversationList"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="@+id/circleImageViewConversationList"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <TextView
+                android:id="@+id/textViewConversationListPreview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="@string/messages"
+                android:textSize="14sp"
+                android:textColor="@color/primaryLight"
+                app:layout_constraintBottom_toBottomOf="@+id/circleImageViewConversationList"
+                app:layout_constraintStart_toEndOf="@+id/circleImageViewConversationList"
+                app:layout_constraintTop_toBottomOf="@+id/textViewConversationListName"
+                app:layout_constraintVertical_bias="1.0" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
