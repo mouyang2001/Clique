@@ -16,7 +16,10 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.matthew.clique.R;
@@ -78,15 +81,14 @@ public class FriendsFragment extends Fragment {
                             //this has to be nested inside
                             firebaseFirestore
                                     .collection("Users")
-                                    .get()
-                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                         @Override
-                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                            if (task.isSuccessful() && !task.getResult().isEmpty()) {
-                                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                                    for (String userId : friendsListRaw) {
-                                                        if (document.getId().equals(userId)) {
-                                                            User user = document.toObject(User.class);
+                                        public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                                            if (!queryDocumentSnapshots.isEmpty()) {
+                                                for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
+                                                    for (String id : friendsListRaw) {
+                                                        if (doc.getDocument().getId().equals(id)) {
+                                                            User user = doc.getDocument().toObject(User.class);
                                                             friendsList.add(user);
                                                             friendsRecyclerAdapter.notifyDataSetChanged();
                                                         }

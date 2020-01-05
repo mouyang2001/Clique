@@ -76,11 +76,12 @@ public class MessagesFragment extends Fragment {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot doc : task.getResult()) {
-                                String conversationId = doc.get("conversation_id").toString();
-                                conversationIdList.add(conversationId);
+                                if (doc.get("conversation_id") != null) {
+                                    String conversationId = doc.get("conversation_id").toString();
+                                    conversationIdList.add(conversationId);
+                                }
                             }
 
-                            //has to be nested
                             firebaseFirestore
                                     .collection("Conversations")
                                     .addSnapshotListener(new EventListener<QuerySnapshot>() {
