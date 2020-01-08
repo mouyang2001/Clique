@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Context;
 import android.content.Intent;
@@ -41,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private int menuResource = R.menu.messages_menu; //default
 
+    private SwipeRefreshLayout swipeRefreshLayout;
+
     private MessagesFragment messagesFragment;
     private FriendsFragment friendsFragment;
     private ProfileFragment profileFragment;
@@ -60,6 +63,14 @@ public class MainActivity extends AppCompatActivity {
 
         bottomNavigation = findViewById(R.id.bottomNavigationViewMain);
         bottomNavigationControl();
+
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayoutMain);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
 
         if (firebaseAuth.getCurrentUser() != null) {
             firebaseFirestore.collection("Users")
