@@ -28,11 +28,14 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.matthew.clique.ConversationActivity;
 import com.matthew.clique.R;
+import com.matthew.clique.Toolkit;
 import com.matthew.clique.models.Conversation;
 import com.matthew.clique.models.Message;
 import com.matthew.clique.models.User;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -50,6 +53,8 @@ public class ConversationsRecyclerAdapter extends RecyclerView.Adapter<Conversat
 
     private String userId;
 
+    private Toolkit tk;
+
     public ConversationsRecyclerAdapter(List<Conversation> conversationsList) {
         this.conversationsList = conversationsList;
     }
@@ -62,6 +67,8 @@ public class ConversationsRecyclerAdapter extends RecyclerView.Adapter<Conversat
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseFirestore = FirebaseFirestore.getInstance();
+
+        tk = new Toolkit(null);
 
         userId = firebaseAuth.getUid();
 
@@ -107,8 +114,10 @@ public class ConversationsRecyclerAdapter extends RecyclerView.Adapter<Conversat
                     public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                         if (!queryDocumentSnapshots.isEmpty()) {
                             for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
-                                String message = doc.getDocument().get("message").toString();
-                                holder.setPreview(message);
+                                Message message = doc.getDocument().toObject(Message.class);
+                                String text = message.getMessage();
+                                String time = tk.convertDateToTime(message.getTime_sent());
+                                holder.setPreview(text + "  " + time);
                             }
                         }
                     }

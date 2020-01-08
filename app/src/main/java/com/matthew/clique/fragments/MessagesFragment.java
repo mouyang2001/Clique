@@ -91,8 +91,6 @@ public class MessagesFragment extends Fragment {
                                                 }
                                             }
 
-                                            //logic flipped so bug might occur
-
                                             if (!queryDocumentSnapshots.isEmpty()) {
                                                 for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
                                                     String documentId = doc.getDocument().getId();

@@ -8,14 +8,18 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Random;
 
 public class Toolkit extends AppCompatActivity {
     private Activity activity;
 
-    public Toolkit(Activity activity) {
+    public Toolkit(@Nullable Activity activity) {
         this.activity = activity;
     }
 
@@ -45,5 +49,10 @@ public class Toolkit extends AppCompatActivity {
         }
 
         return stringBuilder.toString();
+    }
+
+    public String convertDateToTime(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", java.util.Locale.getDefault());
+        return sdf.format(date);
     }
 }
