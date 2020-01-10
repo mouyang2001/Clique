@@ -34,7 +34,5 @@ public class NewMessage extends AppCompatActivity {
 
         friendsList = findViewById(R.id.recyclerViewNewMessage);
 
-        //Todo add friends under Users/userId document
-
     }
 }

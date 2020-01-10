@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.provider.DocumentsContract;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -130,6 +131,28 @@ public class ConversationsRecyclerAdapter extends RecyclerView.Adapter<Conversat
             }
         });
 
+        holder.conversationCardView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (holder.deleteButton.getVisibility() == View.INVISIBLE) {
+                    holder.deleteButton.setVisibility(View.VISIBLE);
+                } else {
+                    holder.deleteButton.setVisibility(View.INVISIBLE);
+                }
+
+                return true; //event handled so that other listeners don't keep listening
+            }
+        });
+
+        holder.deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //delete conversation
+            }
+        });
+
+
+
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -137,6 +160,7 @@ public class ConversationsRecyclerAdapter extends RecyclerView.Adapter<Conversat
         TextView conversationNameField, conversationPreviewField;
         CardView conversationCardView;
         CircleImageView profileImage;
+        ImageView deleteButton;
 
         String conversationName;
 
@@ -147,6 +171,7 @@ public class ConversationsRecyclerAdapter extends RecyclerView.Adapter<Conversat
             conversationCardView = itemView.findViewById(R.id.cardViewConversationList);
             profileImage = itemView.findViewById(R.id.circleImageViewConversationList);
             conversationPreviewField = itemView.findViewById(R.id.textViewConversationListPreview);
+            deleteButton = itemView.findViewById(R.id.imageViewConversationListDelete);
         }
 
         public void setData(String conversationName, @Nullable String profileUri) {
