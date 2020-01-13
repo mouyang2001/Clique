@@ -51,8 +51,13 @@ public class Toolkit extends AppCompatActivity {
         return stringBuilder.toString();
     }
 
+    //todo bug located here
     public String convertDateToTime(Date date) {
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", java.util.Locale.getDefault());
-        return sdf.format(date);
+        if (date != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", java.util.Locale.getDefault());
+            return sdf.format(date);
+        } else {
+            return "";
+        }
     }
 }

@@ -69,8 +69,6 @@ public class ConversationsRecyclerAdapter extends RecyclerView.Adapter<Conversat
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseFirestore = FirebaseFirestore.getInstance();
 
-        tk = new Toolkit(null);
-
         userId = firebaseAuth.getUid();
 
         messageList = new ArrayList<>();
@@ -110,15 +108,16 @@ public class ConversationsRecyclerAdapter extends RecyclerView.Adapter<Conversat
 
         firebaseFirestore
                 .collection("Conversations/" + conversationId + "/Messages")
+                .orderBy("time_sent")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                         if (!queryDocumentSnapshots.isEmpty()) {
                             for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
-                                Message message = doc.getDocument().toObject(Message.class);
-                                String text = message.getMessage();
-                                String time = tk.convertDateToTime(message.getTime_sent());
-                                holder.setPreview(text + "  " + time);
+                                if (doc.getType() == DocumentChange.Type.ADDED) {
+                                    Message message = doc.getDocument().toObject(Message.class);
+                                    holder.setPreview(message.getMessage(), convertDateToTime(message.getTime_sent()));
+                                }
                             }
                         }
                     }
@@ -140,7 +139,7 @@ public class ConversationsRecyclerAdapter extends RecyclerView.Adapter<Conversat
                     holder.deleteButton.setVisibility(View.INVISIBLE);
                 }
 
-                return true; //event handled so that other listeners don't keep listening
+                return true;
             }
         });
 
@@ -174,7 +173,7 @@ public class ConversationsRecyclerAdapter extends RecyclerView.Adapter<Conversat
             deleteButton = itemView.findViewById(R.id.imageViewConversationListDelete);
         }
 
-        public void setData(String conversationName, @Nullable String profileUri) {
+        public void setData(String conversationName, String profileUri) {
             this.conversationName = conversationName;
             conversationNameField.setText(this.conversationName);
             if (profileUri != null) {
@@ -182,12 +181,22 @@ public class ConversationsRecyclerAdapter extends RecyclerView.Adapter<Conversat
             }
         }
 
-        public void setPreview(String preview) {
-            if (preview != null) {
+        public void setPreview(String text, String time) {
+            if (text != null || time != null){
+                String preview = text + "   " + time;
                 conversationPreviewField.setText(preview);
             }
         }
 
+    }
+
+    public String convertDateToTime(Date date) {
+        if (date != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", java.util.Locale.getDefault());
+            return sdf.format(date);
+        } else {
+            return "";
+        }
     }
 
     private void sendToConversation(String friendName, String conversationId) {

@@ -71,7 +71,6 @@ public class MessagesFragment extends Fragment {
         conversationsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         conversationsRecyclerView.setAdapter(conversationsRecyclerAdapter);
 
-
         conversationIdList= new ArrayList<>();
 
         firebaseFirestore
@@ -103,6 +102,8 @@ public class MessagesFragment extends Fragment {
                                                             conversationsRecyclerAdapter.notifyDataSetChanged();
                                                         }
                                                     }
+
+
 
                                                 }
                                             }

@@ -85,6 +85,7 @@ public class ConversationActivity extends AppCompatActivity {
         //Adapter feed
         firebaseFirestore
                 .collection("Conversations/" + conversationId + "/Messages")
+                .orderBy("time_sent")
                 .addSnapshotListener(ConversationActivity.this, new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
@@ -117,7 +118,7 @@ public class ConversationActivity extends AppCompatActivity {
         });
 
     }
-
+    
     private void sendMessage(String text) {
         if (!text.isEmpty()) {
             HashMap<String, Object> messageMap = new HashMap<>();
