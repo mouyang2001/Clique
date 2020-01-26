@@ -15,9 +15,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.api.Distribution;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
@@ -31,6 +33,7 @@ import com.matthew.clique.adapters.MessagesRecyclerAdapter;
 import com.matthew.clique.models.Message;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +54,10 @@ public class ConversationActivity extends AppCompatActivity {
 
     private MessagesRecyclerAdapter messagesRecyclerAdapter;
     private List<Message> messageList;
+    private List<Message> insertList;
     private RecyclerView messagesRecyclerView;
+
+    private boolean isFirstLoad = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,14 +81,16 @@ public class ConversationActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         //RecyclerView setup
+        insertList = new ArrayList<>();
         messageList = new ArrayList<>();
         messagesRecyclerAdapter = new MessagesRecyclerAdapter(messageList);
         messagesRecyclerView = findViewById(R.id.recyclerViewConversation);
-        messagesRecyclerView.setHasFixedSize(true);
-        messagesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        //todo change layout loading order
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setReverseLayout(true); //sets bottom as start
+        messagesRecyclerView.setLayoutManager(linearLayoutManager);
         messagesRecyclerView.setAdapter(messagesRecyclerAdapter);
 
-        //Adapter feed
         firebaseFirestore
                 .collection("Conversations/" + conversationId + "/Messages")
                 .orderBy("time_sent")
@@ -90,18 +98,23 @@ public class ConversationActivity extends AppCompatActivity {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                         if (!queryDocumentSnapshots.isEmpty()) {
-                            for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
-                                if (doc.getType() == DocumentChange.Type.ADDED) {
-                                    String documentId = doc.getDocument().getId();
-
-                                    if (!documentId.equals(userId)) {
+                            if (isFirstLoad) {
+                                for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
+                                    if (doc.getType() == DocumentChange.Type.ADDED) {
                                         Message message = doc.getDocument().toObject(Message.class);
-                                        messageList.add(message);
-                                        messagesRecyclerAdapter.notifyDataSetChanged();
+                                        messageList.add(0, message);
+                                        messagesRecyclerAdapter.insertMessages(messageList);
                                     }
-
+                                }
+                            } else {
+                                for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
+                                    if (doc.getType() == DocumentChange.Type.ADDED) {
+                                        Message message = doc.getDocument().toObject(Message.class);
+                                        messageList.add(0, message); //push to the start of the list
+                                    }
                                 }
                             }
+
                         }
                     }
                 });
@@ -121,7 +134,11 @@ public class ConversationActivity extends AppCompatActivity {
     
     private void sendMessage(String text) {
         if (!text.isEmpty()) {
+            messageField.getText().clear();
+
+            String messageId = tk.generateUID(10);
             HashMap<String, Object> messageMap = new HashMap<>();
+            messageMap.put("message_id", messageId);
             messageMap.put("conversation_id", conversationId);
             messageMap.put("sender", userId);
             messageMap.put("message", text);
@@ -129,15 +146,8 @@ public class ConversationActivity extends AppCompatActivity {
 
             firebaseFirestore
                     .collection("Conversations/" + conversationId + "/Messages")
-                    .add(messageMap)
-                    .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                        @Override
-                        public void onComplete(@NonNull Task<DocumentReference> task) {
-                            if (task.isSuccessful()) {
-                                messageField.getText().clear();
-                            }
-                        }
-                    });
+                    .document(messageId)
+                    .set(messageMap);
         }
     }
 

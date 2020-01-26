@@ -8,13 +8,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.matthew.clique.R;
 import com.matthew.clique.Toolkit;
 import com.matthew.clique.models.Message;
+import com.matthew.clique.util.DiffUtilCallbackMessage;
 
 import java.util.List;
 
@@ -50,8 +56,32 @@ public class MessagesRecyclerAdapter extends RecyclerView.Adapter<MessagesRecycl
         return new MessagesRecyclerAdapter.ViewHolder(view);
     }
 
+    public void insertData(List<Message> insertList) {
+        //add new data to list
+        DiffUtilCallbackMessage diffUtilCallback = new DiffUtilCallbackMessage(messageList, insertList);
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffUtilCallback);
+
+        messageList = insertList;
+        diffResult.dispatchUpdatesTo(this);
+    }
+
+    public void updateData(List<Message> newList) {
+        //clear old data and add new data;
+        DiffUtilCallbackMessage diffUtilCallback = new DiffUtilCallbackMessage(messageList, newList);
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffUtilCallback);
+
+        messageList.clear();
+        messageList.addAll(newList);
+        diffResult.dispatchUpdatesTo(this);
+    }
+
+    public void insertMessages(List<Message> list) {
+        this.messageList = list;
+        notifyDataSetChanged();
+        //todo implement this method for faster loading
+    }
+
     @Override
-    //always works with current user
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         holder.setIsRecyclable(false);
 
@@ -60,6 +90,20 @@ public class MessagesRecyclerAdapter extends RecyclerView.Adapter<MessagesRecycl
         String text = message.getMessage();
         String senderId = message.getSender();
         holder.setMessage(text, senderId);
+
+        firebaseFirestore
+                .collection("Users")
+                .document(senderId)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            String profileUri = task.getResult().get("profile_image").toString();
+                            holder.setProfileImage(profileUri);
+                        }
+                    }
+                });
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -80,9 +124,16 @@ public class MessagesRecyclerAdapter extends RecyclerView.Adapter<MessagesRecycl
                 profileImage.setVisibility(View.INVISIBLE);
                 messageField.setVisibility(View.INVISIBLE);
                 messageFieldUser.setVisibility(View.VISIBLE);
+
                 messageFieldUser.setText(text);
             } else {
                 messageField.setText(text);
+            }
+        }
+
+        public void setProfileImage(String profileUri) {
+            if (profileUri != null) {
+                Glide.with(context).load(profileUri).into(profileImage);
             }
         }
     }
