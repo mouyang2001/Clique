@@ -61,7 +61,7 @@ public class MessagesRecyclerAdapter extends RecyclerView.Adapter<MessagesRecycl
         DiffUtilCallbackMessage diffUtilCallback = new DiffUtilCallbackMessage(messageList, insertList);
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffUtilCallback);
 
-        messageList = insertList;
+        messageList.addAll(0, insertList);
         diffResult.dispatchUpdatesTo(this);
     }
 
@@ -71,11 +71,11 @@ public class MessagesRecyclerAdapter extends RecyclerView.Adapter<MessagesRecycl
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffUtilCallback);
 
         messageList.clear();
-        messageList.addAll(newList);
+        messageList.add(0, newList.get(0));
         diffResult.dispatchUpdatesTo(this);
     }
 
-    public void insertMessages(List<Message> list) {
+    public void loadMessages(List<Message> list) {
         this.messageList = list;
         notifyDataSetChanged();
         //todo implement this method for faster loading
@@ -85,7 +85,7 @@ public class MessagesRecyclerAdapter extends RecyclerView.Adapter<MessagesRecycl
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         holder.setIsRecyclable(false);
 
-        Message message = messageList.get(position);
+        Message message = this.messageList.get(position);
 
         String text = message.getMessage();
         String senderId = message.getSender();

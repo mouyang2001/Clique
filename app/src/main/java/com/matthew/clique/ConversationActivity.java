@@ -54,7 +54,6 @@ public class ConversationActivity extends AppCompatActivity {
 
     private MessagesRecyclerAdapter messagesRecyclerAdapter;
     private List<Message> messageList;
-    private List<Message> insertList;
     private RecyclerView messagesRecyclerView;
 
     private boolean isFirstLoad = true;
@@ -81,7 +80,6 @@ public class ConversationActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         //RecyclerView setup
-        insertList = new ArrayList<>();
         messageList = new ArrayList<>();
         messagesRecyclerAdapter = new MessagesRecyclerAdapter(messageList);
         messagesRecyclerView = findViewById(R.id.recyclerViewConversation);
@@ -103,16 +101,20 @@ public class ConversationActivity extends AppCompatActivity {
                                     if (doc.getType() == DocumentChange.Type.ADDED) {
                                         Message message = doc.getDocument().toObject(Message.class);
                                         messageList.add(0, message);
-                                        messagesRecyclerAdapter.insertMessages(messageList);
+                                        messagesRecyclerAdapter.loadMessages(messageList);
                                     }
                                 }
+                                isFirstLoad = false;
                             } else {
+                                List<Message> insertList = new ArrayList<>();
                                 for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
                                     if (doc.getType() == DocumentChange.Type.ADDED) {
                                         Message message = doc.getDocument().toObject(Message.class);
-                                        messageList.add(0, message); //push to the start of the list
+                                        insertList.add(0, message); //push to the start of the list
                                     }
                                 }
+                                messagesRecyclerAdapter.insertData(insertList);
+                                messagesRecyclerView.smoothScrollToPosition(0);
                             }
 
                         }

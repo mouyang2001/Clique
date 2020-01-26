@@ -18,6 +18,10 @@ public class Message {
         this.time_sent = time_sent;
     }
 
+    public String getMessage_id() {return message_id;}
+
+    public void setMessage_id(String message_id) {this.message_id = message_id;}
+
     public String getConversation_id() {
         return conversation_id;
     }
