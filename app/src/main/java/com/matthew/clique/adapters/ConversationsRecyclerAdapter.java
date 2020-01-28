@@ -76,6 +76,11 @@ public class ConversationsRecyclerAdapter extends RecyclerView.Adapter<Conversat
         return new ConversationsRecyclerAdapter.ViewHolder(view);
     }
 
+    public void loadConversations(List<Conversation> list) {
+        this.conversationsList = list;
+        notifyDataSetChanged();
+    }
+
     @Override
     //always works with current user
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {

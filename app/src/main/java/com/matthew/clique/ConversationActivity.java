@@ -16,8 +16,10 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.api.Distribution;
 import com.google.firebase.auth.FirebaseAuth;
@@ -83,9 +85,9 @@ public class ConversationActivity extends AppCompatActivity {
         messageList = new ArrayList<>();
         messagesRecyclerAdapter = new MessagesRecyclerAdapter(messageList);
         messagesRecyclerView = findViewById(R.id.recyclerViewConversation);
-        //todo change layout loading order
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setReverseLayout(true); //sets bottom as start
+        linearLayoutManager.setStackFromEnd(false);
         messagesRecyclerView.setLayoutManager(linearLayoutManager);
         messagesRecyclerView.setAdapter(messagesRecyclerAdapter);
 
@@ -101,20 +103,20 @@ public class ConversationActivity extends AppCompatActivity {
                                     if (doc.getType() == DocumentChange.Type.ADDED) {
                                         Message message = doc.getDocument().toObject(Message.class);
                                         messageList.add(0, message);
-                                        messagesRecyclerAdapter.loadMessages(messageList);
                                     }
                                 }
+                                messagesRecyclerAdapter.loadMessages(messageList);
+                                //todo init firebase listener
                                 isFirstLoad = false;
                             } else {
-                                List<Message> insertList = new ArrayList<>();
                                 for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
                                     if (doc.getType() == DocumentChange.Type.ADDED) {
                                         Message message = doc.getDocument().toObject(Message.class);
-                                        insertList.add(0, message); //push to the start of the list
+                                        messageList.add(0, message);
                                     }
                                 }
-                                messagesRecyclerAdapter.insertData(insertList);
-                                messagesRecyclerView.smoothScrollToPosition(0);
+                                messagesRecyclerAdapter.insertMessages(messageList);
+
                             }
 
                         }
@@ -149,7 +151,13 @@ public class ConversationActivity extends AppCompatActivity {
             firebaseFirestore
                     .collection("Conversations/" + conversationId + "/Messages")
                     .document(messageId)
-                    .set(messageMap);
+                    .set(messageMap)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+//                            messagesRecyclerAdapter.notifyItemInserted(0);
+                        }
+                    });
         }
     }
 

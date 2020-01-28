@@ -4,11 +4,11 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -20,7 +20,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.matthew.clique.R;
 import com.matthew.clique.Toolkit;
 import com.matthew.clique.models.Message;
-import com.matthew.clique.util.DiffUtilCallbackMessage;
 
 import java.util.List;
 
@@ -56,34 +55,23 @@ public class MessagesRecyclerAdapter extends RecyclerView.Adapter<MessagesRecycl
         return new MessagesRecyclerAdapter.ViewHolder(view);
     }
 
-    public void insertData(List<Message> insertList) {
-        //add new data to list
-        DiffUtilCallbackMessage diffUtilCallback = new DiffUtilCallbackMessage(messageList, insertList);
-        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffUtilCallback);
-
-        messageList.addAll(0, insertList);
-        diffResult.dispatchUpdatesTo(this);
-    }
-
-    public void updateData(List<Message> newList) {
-        //clear old data and add new data;
-        DiffUtilCallbackMessage diffUtilCallback = new DiffUtilCallbackMessage(messageList, newList);
-        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffUtilCallback);
-
-        messageList.clear();
-        messageList.add(0, newList.get(0));
-        diffResult.dispatchUpdatesTo(this);
-    }
-
     public void loadMessages(List<Message> list) {
         this.messageList = list;
         notifyDataSetChanged();
-        //todo implement this method for faster loading
+    }
+
+    public void insertMessages(List<Message> list) {
+        this.messageList = list;
+        notifyItemInserted(0);
+        //todo fix duplication bug
     }
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         holder.setIsRecyclable(false);
+
+        //animations
+        holder.messageFieldUser.setAnimation(AnimationUtils.loadAnimation(context, R.anim.fade_transition));
 
         Message message = this.messageList.get(position);
 

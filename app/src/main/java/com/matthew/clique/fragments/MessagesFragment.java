@@ -99,13 +99,10 @@ public class MessagesFragment extends Fragment {
                                                         if (documentId.equals(conversationId)) {
                                                             Conversation conversation = doc.getDocument().toObject(Conversation.class);
                                                             conversationList.add(conversation);
-                                                            conversationsRecyclerAdapter.notifyDataSetChanged();
                                                         }
                                                     }
-
-
-
                                                 }
+                                                conversationsRecyclerAdapter.loadConversations(conversationList);
                                             }
 
                                         }
