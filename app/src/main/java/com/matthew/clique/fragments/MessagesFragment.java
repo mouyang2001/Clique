@@ -84,7 +84,7 @@ public class MessagesFragment extends Fragment {
                                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                     @Override
                                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                        if (task.isSuccessful()) {
+                                        if (task.isSuccessful() && task.getResult() != null  && !queryDocumentSnapshots.isEmpty()) {
                                             for (QueryDocumentSnapshot doc : task.getResult()) {
                                                 if (doc.get("conversation_id") != null) {
                                                     String conversationId = doc.get("conversation_id").toString();
@@ -92,18 +92,17 @@ public class MessagesFragment extends Fragment {
                                                 }
                                             }
 
-                                            if (!queryDocumentSnapshots.isEmpty()) {
-                                                for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
-                                                    String documentId = doc.getDocument().getId();
-                                                    for (String conversationId : conversationIdList) {
-                                                        if (documentId.equals(conversationId)) {
-                                                            Conversation conversation = doc.getDocument().toObject(Conversation.class);
-                                                            conversationList.add(conversation);
-                                                        }
+                                            for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
+                                                String documentId = doc.getDocument().getId();
+                                                for (String conversationId : conversationIdList) {
+                                                    if (documentId.equals(conversationId)) {
+                                                        Conversation conversation = doc.getDocument().toObject(Conversation.class);
+                                                        conversationList.add(conversation);
                                                     }
                                                 }
-                                                conversationsRecyclerAdapter.loadConversations(conversationList);
                                             }
+
+                                            conversationsRecyclerAdapter.loadConversations(conversationList);
 
                                         }
                                     }
@@ -111,7 +110,6 @@ public class MessagesFragment extends Fragment {
 
                     }
                 });
-
 
         return view;
     }

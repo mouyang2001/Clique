@@ -104,21 +104,17 @@ public class ConversationActivity extends AppCompatActivity {
                                         messageList.add(message);
                                     }
                                 }
-                                messagesRecyclerAdapter.loadMessages(messageList);
-                                //todo init firebase listener
+                                messagesRecyclerAdapter.refreshData(messageList);
                                 isFirstLoad = false;
-                            } else {
-                                for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
-                                    if (doc.getType() == DocumentChange.Type.ADDED) {
-                                        Message message = doc.getDocument().toObject(Message.class);
-                                        messagesRecyclerAdapter.addMessage(message);
-                                        messagesRecyclerView.smoothScrollToPosition(messagesRecyclerAdapter.getItemCount());
-                                    }
-                                }
-
-
                             }
 
+                            for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
+                                if (doc.getType() == DocumentChange.Type.ADDED) {
+                                    Message message = doc.getDocument().toObject(Message.class);
+                                    messagesRecyclerAdapter.addMessage(message);
+                                    messagesRecyclerView.smoothScrollToPosition(messagesRecyclerAdapter.getItemCount());
+                                }
+                            }
                         }
                     }
                 });

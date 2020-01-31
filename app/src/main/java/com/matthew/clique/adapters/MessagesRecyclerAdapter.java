@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -17,8 +18,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.protobuf.DescriptorProtos;
 import com.matthew.clique.R;
 import com.matthew.clique.Toolkit;
+import com.matthew.clique.fragments.MessageOptionsDialog;
 import com.matthew.clique.models.Message;
 
 import java.util.List;
@@ -33,12 +36,9 @@ public class MessagesRecyclerAdapter extends RecyclerView.Adapter<MessagesRecycl
 
     private String userId;
 
-    private Toolkit tk;
+    private MessageOptionsDialog messageOptionsDialog;
 
-    public MessagesRecyclerAdapter(List<Message> messageList) {
-        setHasStableIds(true);
-        this.messageList = messageList;
-    }
+    public MessagesRecyclerAdapter(List<Message> messageList) { this.messageList = messageList; }
 
     @NonNull
     @Override
@@ -51,12 +51,10 @@ public class MessagesRecyclerAdapter extends RecyclerView.Adapter<MessagesRecycl
 
         userId = firebaseAuth.getUid();
 
-        tk = new Toolkit(null);
-
         return new MessagesRecyclerAdapter.ViewHolder(view);
     }
 
-    public void loadMessages(List<Message> list) {
+    public void refreshData(List<Message> list) {
         this.messageList = list;
         notifyDataSetChanged();
     }
@@ -70,7 +68,6 @@ public class MessagesRecyclerAdapter extends RecyclerView.Adapter<MessagesRecycl
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         holder.setIsRecyclable(false);
 
-        //animations
         holder.messageFieldUser.setAnimation(AnimationUtils.loadAnimation(context, R.anim.fade_transition));
 
         Message message = this.messageList.get(position);
@@ -92,6 +89,28 @@ public class MessagesRecyclerAdapter extends RecyclerView.Adapter<MessagesRecycl
                         }
                     }
                 });
+
+        holder.messageField.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                loadMessageOptions();
+                return true;
+            }
+        });
+
+        holder.messageFieldUser.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                loadMessageOptions();
+                return true;
+            }
+        });
+    }
+
+    private void loadMessageOptions() {
+        messageOptionsDialog = new MessageOptionsDialog();
+        messageOptionsDialog
+                .show(((FragmentActivity)context).getSupportFragmentManager(), "messageOptions");
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
