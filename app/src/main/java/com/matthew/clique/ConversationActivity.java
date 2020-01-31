@@ -86,8 +86,7 @@ public class ConversationActivity extends AppCompatActivity {
         messagesRecyclerAdapter = new MessagesRecyclerAdapter(messageList);
         messagesRecyclerView = findViewById(R.id.recyclerViewConversation);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        linearLayoutManager.setReverseLayout(true); //sets bottom as start
-        linearLayoutManager.setStackFromEnd(false);
+        linearLayoutManager.setStackFromEnd(true); //solved everything
         messagesRecyclerView.setLayoutManager(linearLayoutManager);
         messagesRecyclerView.setAdapter(messagesRecyclerAdapter);
 
@@ -102,7 +101,7 @@ public class ConversationActivity extends AppCompatActivity {
                                 for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
                                     if (doc.getType() == DocumentChange.Type.ADDED) {
                                         Message message = doc.getDocument().toObject(Message.class);
-                                        messageList.add(0, message);
+                                        messageList.add(message);
                                     }
                                 }
                                 messagesRecyclerAdapter.loadMessages(messageList);
@@ -112,10 +111,11 @@ public class ConversationActivity extends AppCompatActivity {
                                 for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
                                     if (doc.getType() == DocumentChange.Type.ADDED) {
                                         Message message = doc.getDocument().toObject(Message.class);
-                                        messageList.add(0, message);
+                                        messagesRecyclerAdapter.addMessage(message);
+                                        messagesRecyclerView.smoothScrollToPosition(messagesRecyclerAdapter.getItemCount());
                                     }
                                 }
-                                messagesRecyclerAdapter.insertMessages(messageList);
+
 
                             }
 
@@ -151,13 +151,7 @@ public class ConversationActivity extends AppCompatActivity {
             firebaseFirestore
                     .collection("Conversations/" + conversationId + "/Messages")
                     .document(messageId)
-                    .set(messageMap)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-//                            messagesRecyclerAdapter.notifyItemInserted(0);
-                        }
-                    });
+                    .set(messageMap);
         }
     }
 

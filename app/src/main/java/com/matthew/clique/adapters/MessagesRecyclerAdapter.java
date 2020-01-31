@@ -36,6 +36,7 @@ public class MessagesRecyclerAdapter extends RecyclerView.Adapter<MessagesRecycl
     private Toolkit tk;
 
     public MessagesRecyclerAdapter(List<Message> messageList) {
+        setHasStableIds(true);
         this.messageList = messageList;
     }
 
@@ -60,10 +61,9 @@ public class MessagesRecyclerAdapter extends RecyclerView.Adapter<MessagesRecycl
         notifyDataSetChanged();
     }
 
-    public void insertMessages(List<Message> list) {
-        this.messageList = list;
-        notifyItemInserted(0);
-        //todo fix duplication bug
+    public void addMessage(Message message) {
+        this.messageList.add(message);
+        notifyItemInserted(this.messageList.size());
     }
 
     @Override
@@ -128,8 +128,8 @@ public class MessagesRecyclerAdapter extends RecyclerView.Adapter<MessagesRecycl
 
     @Override
     public int getItemCount() {
-        if (messageList != null) {
-            return messageList.size();
+        if (this.messageList != null) {
+            return this.messageList.size();
         } else {
             return 0;
         }
