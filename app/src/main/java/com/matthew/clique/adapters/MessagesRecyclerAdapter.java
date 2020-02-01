@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
@@ -26,7 +27,8 @@ import com.matthew.clique.models.Message;
 
 import java.util.List;
 
-public class MessagesRecyclerAdapter extends RecyclerView.Adapter<MessagesRecyclerAdapter.ViewHolder> {
+public class MessagesRecyclerAdapter
+        extends RecyclerView.Adapter<MessagesRecyclerAdapter.ViewHolder> {
 
     private List<Message> messageList;
     private Context context;

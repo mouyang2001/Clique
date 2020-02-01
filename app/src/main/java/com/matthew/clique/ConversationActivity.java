@@ -32,6 +32,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.matthew.clique.R;
 import com.matthew.clique.adapters.MessagesRecyclerAdapter;
+import com.matthew.clique.fragments.MessageOptionsDialog;
 import com.matthew.clique.models.Message;
 
 import java.util.ArrayList;
@@ -40,7 +41,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ConversationActivity extends AppCompatActivity {
+public class ConversationActivity
+        extends AppCompatActivity
+        implements MessageOptionsDialog.MessageOptionsListener{
 
     private Toolkit tk;
 
@@ -151,6 +154,7 @@ public class ConversationActivity extends AppCompatActivity {
         }
     }
 
+    //Toolbar options control
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.conversation_menu, menu);
@@ -165,5 +169,11 @@ public class ConversationActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    //Message options control
+    @Override
+    public void onMessageOptionClicked(String text) {
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
 }

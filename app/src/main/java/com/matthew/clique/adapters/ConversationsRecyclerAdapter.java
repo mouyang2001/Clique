@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,6 +31,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.matthew.clique.ConversationActivity;
 import com.matthew.clique.R;
 import com.matthew.clique.Toolkit;
+import com.matthew.clique.fragments.MessageOptionsDialog;
 import com.matthew.clique.models.Conversation;
 import com.matthew.clique.models.Message;
 import com.matthew.clique.models.User;
@@ -155,9 +157,8 @@ public class ConversationsRecyclerAdapter extends RecyclerView.Adapter<Conversat
             }
         });
 
-
-
     }
+
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 

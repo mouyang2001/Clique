@@ -5,17 +5,19 @@
     android:padding="16dp">
 
     <TextView
+        android:id="@+id/textViewMessageOptionsDelete"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="delete"
-        android:textSize="24sp"
-        android:textAlignment="center"/>
+        android:textAlignment="center"
+        android:textSize="24sp" />
 
     <TextView
+        android:id="@+id/textViewMessageOptionsReport"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="report"
-        android:textSize="24sp"
-        android:textAlignment="center"/>
+        android:textAlignment="center"
+        android:textSize="24sp" />
 
 </LinearLayout>
