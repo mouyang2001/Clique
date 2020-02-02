@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,6 +20,17 @@ import com.matthew.clique.R;
 public class MessageOptionsDialog extends BottomSheetDialogFragment {
     private MessageOptionsListener listener;
 
+    public int messagePosition;
+
+    public MessageOptionsDialog(int messageId) {
+        this.messagePosition = messageId;
+    }
+
+    public int getMessagePosition() {
+        return messagePosition;
+    }
+
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -26,24 +38,31 @@ public class MessageOptionsDialog extends BottomSheetDialogFragment {
 
         getDialog().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
 
-//        TextView deleteButton = view.findViewById(R.id.textViewMessageOptionsDelete);
-//
-//        deleteButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                listener.onMessageOptionClicked("Delete button clicked");
-//                dismiss();
-//            }
-//        });
-//
+        ImageView deleteButton = view.findViewById(R.id.imageViewMessageOptionsDelete);
+        ImageView copyButton = view.findViewById(R.id.imageViewMessageOptionsCopy);
 
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onMessageOptionClicked("delete", messagePosition);
+                dismiss();
+            }
+        });
+
+        copyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onMessageOptionClicked("copy", messagePosition);
+                dismiss();
+            }
+        });
 
         return view;
     }
 
     //todo implement listeners for option menu;
     public interface MessageOptionsListener {
-        void onMessageOptionClicked(String text);
+        void onMessageOptionClicked(String command, int messagePosition);
     }
 
     @Override

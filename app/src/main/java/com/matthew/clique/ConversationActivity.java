@@ -8,6 +8,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -61,8 +64,6 @@ public class ConversationActivity
     private List<Message> messageList;
     private RecyclerView messagesRecyclerView;
 
-    private boolean isFirstLoad = true;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,17 +101,6 @@ public class ConversationActivity
                     @Override
                     public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                         if (!queryDocumentSnapshots.isEmpty()) {
-                            if (isFirstLoad) {
-                                for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
-                                    if (doc.getType() == DocumentChange.Type.ADDED) {
-                                        Message message = doc.getDocument().toObject(Message.class);
-                                        messageList.add(message);
-                                    }
-                                }
-                                messagesRecyclerAdapter.refreshData(messageList);
-                                isFirstLoad = false;
-                            }
-
                             for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
                                 if (doc.getType() == DocumentChange.Type.ADDED) {
                                     Message message = doc.getDocument().toObject(Message.class);
@@ -146,6 +136,7 @@ public class ConversationActivity
             messageMap.put("sender", userId);
             messageMap.put("message", text);
             messageMap.put("time_sent", FieldValue.serverTimestamp());
+            messageMap.put("deleted", false);
 
             firebaseFirestore
                     .collection("Conversations/" + conversationId + "/Messages")
@@ -173,7 +164,30 @@ public class ConversationActivity
 
     //Message options control
     @Override
-    public void onMessageOptionClicked(String text) {
-        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
+    public void onMessageOptionClicked(String command, int messagePosition) {
+        switch(command) {
+            case "delete":
+                deleteMessage(messagePosition);
+                break;
+            case "copy":
+                copyMessage(messagePosition);
+                break;
+        }
+    }
+
+    private void deleteMessage(int messagePosition) {
+        String messageId = messagesRecyclerAdapter.getMessages().get(messagePosition).getMessage_id();
+        firebaseFirestore
+                .collection("Conversations/" + conversationId + "/Messages")
+                .document(messageId)
+                .update("deleted", true);
+    }
+
+    private void copyMessage(int messagePosition) {
+        String text = messagesRecyclerAdapter.getMessages().get(messagePosition).getMessage();
+        ClipboardManager clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText("Copied text", text);
+        Toast.makeText(this, "Copied", Toast.LENGTH_SHORT).show();
+        clipboardManager.setPrimaryClip(clip);
     }
 }

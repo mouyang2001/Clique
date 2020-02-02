@@ -67,6 +67,10 @@ public class MessagesRecyclerAdapter
         notifyItemInserted(this.messageList.size());
     }
 
+    public List<Message> getMessages() {
+        return this.messageList;
+    }
+
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         holder.setIsRecyclable(false);
@@ -77,7 +81,8 @@ public class MessagesRecyclerAdapter
 
         String text = message.getMessage();
         String senderId = message.getSender();
-        holder.setMessage(text, senderId);
+        Boolean deleted = message.getDeleted();
+        holder.setMessage(text, senderId, deleted);
 
         firebaseFirestore
                 .collection("Users")
@@ -96,7 +101,7 @@ public class MessagesRecyclerAdapter
         holder.messageField.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                loadMessageOptions();
+                loadMessageOptions(position);
                 return true;
             }
         });
@@ -104,14 +109,14 @@ public class MessagesRecyclerAdapter
         holder.messageFieldUser.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                loadMessageOptions();
+                loadMessageOptions(position);
                 return true;
             }
         });
     }
 
-    private void loadMessageOptions() {
-        messageOptionsDialog = new MessageOptionsDialog();
+    private void loadMessageOptions(int position) {
+        messageOptionsDialog = new MessageOptionsDialog(position);
         messageOptionsDialog.show(((FragmentActivity)context).getSupportFragmentManager(), "messageOptions");
 
     }
@@ -129,7 +134,7 @@ public class MessagesRecyclerAdapter
             profileImage = itemView.findViewById(R.id.circleImageViewMessage);
         }
 
-        public void setMessage(String text, String senderId) {
+        public void setMessage(String text, String senderId, Boolean deleted) {
             if (senderId.equals(userId)) {
                 profileImage.setVisibility(View.INVISIBLE);
                 messageField.setVisibility(View.INVISIBLE);
