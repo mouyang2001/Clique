@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -111,8 +112,8 @@ public class MessagesRecyclerAdapter
 
     private void loadMessageOptions() {
         messageOptionsDialog = new MessageOptionsDialog();
-        messageOptionsDialog
-                .show(((FragmentActivity)context).getSupportFragmentManager(), "messageOptions");
+        messageOptionsDialog.show(((FragmentActivity)context).getSupportFragmentManager(), "messageOptions");
+
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

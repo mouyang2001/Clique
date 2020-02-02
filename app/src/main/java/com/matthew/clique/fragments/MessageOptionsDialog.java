@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,15 +24,19 @@ public class MessageOptionsDialog extends BottomSheetDialogFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.bottom_message_options, container, false);
 
-        TextView deleteButton = view.findViewById(R.id.textViewMessageOptionsDelete);
+        getDialog().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
 
-        deleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.onMessageOptionClicked("Delete button clicked");
-                dismiss();
-            }
-        });
+//        TextView deleteButton = view.findViewById(R.id.textViewMessageOptionsDelete);
+//
+//        deleteButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                listener.onMessageOptionClicked("Delete button clicked");
+//                dismiss();
+//            }
+//        });
+//
+
 
         return view;
     }

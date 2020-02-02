@@ -41,5 +41,7 @@
 
     <string name="say_hi">Say Hi!</string>
 
+    <string name="copy">Copy</string>
+    <string name="delete">Delete</string>
 
 </resources>
