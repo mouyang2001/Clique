@@ -44,4 +44,6 @@
     <string name="copy">Copy</string>
     <string name="delete">Delete</string>
 
+    <string name="message_deleted">Message deleted</string>
+
 </resources>

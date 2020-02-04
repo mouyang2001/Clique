@@ -8,4 +8,9 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="messageDeleted">
+        <item name="android:text">@string/message_deleted</item>
+        <item name="android:background">@drawable/bg_message_deleted</item>
+    </style>
+
 </resources>

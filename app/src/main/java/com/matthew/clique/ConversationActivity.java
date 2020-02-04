@@ -32,10 +32,12 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.matthew.clique.R;
 import com.matthew.clique.adapters.MessagesRecyclerAdapter;
 import com.matthew.clique.fragments.MessageOptionsDialog;
+import com.matthew.clique.models.Conversation;
 import com.matthew.clique.models.Message;
 
 import java.util.ArrayList;
@@ -62,6 +64,7 @@ public class ConversationActivity
 
     private MessagesRecyclerAdapter messagesRecyclerAdapter;
     private List<Message> messageList;
+    private List<Message> deletedMessageList;
     private RecyclerView messagesRecyclerView;
 
     @Override
@@ -111,6 +114,23 @@ public class ConversationActivity
                         }
                     }
                 });
+
+//        firebaseFirestore
+//                .collection("Conversations/" + conversationId + "/Deleted_Messages")
+//                .orderBy("time_sent")
+//                .addSnapshotListener(ConversationActivity.this, new EventListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+//                        if (!queryDocumentSnapshots.isEmpty()) {
+//                            for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
+//                                if (doc.getType() == DocumentChange.Type.ADDED) {
+//                                    Message message = doc.getDocument().toObject(Message.class);
+//                                    messagesRecyclerAdapter.deleteMessage(message);
+//                                }
+//                            }
+//                        }
+//                    }
+//                });
 
         //Listeners
         messageField = findViewById(R.id.editTextMessage);
@@ -176,11 +196,17 @@ public class ConversationActivity
     }
 
     private void deleteMessage(int messagePosition) {
-        String messageId = messagesRecyclerAdapter.getMessages().get(messagePosition).getMessage_id();
+        Message message = messagesRecyclerAdapter.getMessages().get(messagePosition);
         firebaseFirestore
                 .collection("Conversations/" + conversationId + "/Messages")
-                .document(messageId)
+                .document(message.getMessage_id())
                 .update("deleted", true);
+
+        message.setDeleted(true);
+        firebaseFirestore
+                .collection("Conversations/" + conversationId + "/Deleted_Messages")
+                .document(message.getMessage_id())
+                .set(message);
     }
 
     private void copyMessage(int messagePosition) {

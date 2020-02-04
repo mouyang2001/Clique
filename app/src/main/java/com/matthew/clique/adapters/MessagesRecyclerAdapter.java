@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,9 +19,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.protobuf.DescriptorProtos;
 import com.matthew.clique.R;
-import com.matthew.clique.Toolkit;
 import com.matthew.clique.fragments.MessageOptionsDialog;
 import com.matthew.clique.models.Message;
 
@@ -65,6 +62,13 @@ public class MessagesRecyclerAdapter
     public void addMessage(Message message) {
         this.messageList.add(message);
         notifyItemInserted(this.messageList.size());
+    }
+
+    public void deleteMessage(Message message) {
+        if (message != null) {
+            int position = this.messageList.indexOf(message);
+            this.messageList.get(position).setDeleted(true);
+        }
     }
 
     public List<Message> getMessages() {
@@ -140,10 +144,23 @@ public class MessagesRecyclerAdapter
                 messageField.setVisibility(View.INVISIBLE);
                 messageFieldUser.setVisibility(View.VISIBLE);
 
-                messageFieldUser.setText(text);
+                if (deleted) {
+                    messageDeleted(messageFieldUser);
+                } else {
+                    messageFieldUser.setText(text);
+                }
             } else {
-                messageField.setText(text);
+                if (deleted) {
+                    messageDeleted(messageField);
+                } else {
+                    messageField.setText(R.string.message_deleted);
+                }
             }
+        }
+
+        private void messageDeleted(TextView mf) {
+            mf.setBackgroundResource(R.drawable.bg_message_deleted);
+            mf.setText(R.string.message_deleted);
         }
 
         public void setProfileImage(String profileUri) {
