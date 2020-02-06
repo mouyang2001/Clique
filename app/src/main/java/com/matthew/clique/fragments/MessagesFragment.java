@@ -61,8 +61,9 @@ public class MessagesFragment extends Fragment {
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
                 .setPersistenceEnabled(true).build();
         firebaseFirestore.setFirestoreSettings(settings);
-        //todo access from cache first even when online
         userId = firebaseAuth.getUid();
+
+        //todo access from cache first even when online or loading bar
 
         conversationList = new ArrayList<>();
         conversationsRecyclerAdapter = new ConversationsRecyclerAdapter(conversationList);

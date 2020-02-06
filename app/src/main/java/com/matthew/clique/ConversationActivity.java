@@ -99,7 +99,6 @@ public class ConversationActivity
         friendName = getIntent().getStringExtra("friend_name");
         toolbar = findViewById(R.id.toolbarConversation);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("");
         getSupportActionBar().setTitle(friendName);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -145,7 +144,6 @@ public class ConversationActivity
             }
         });
 
-        //todo send pics
         cameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -178,6 +176,7 @@ public class ConversationActivity
         }
     }
 
+    //Todo image compression
     private void uploadImage(StorageReference path, Uri uri) {
         final StorageReference imagePath = path;
         imagePath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -232,7 +231,7 @@ public class ConversationActivity
         return super.onOptionsItemSelected(item);
     }
 
-    //Message options control
+    //Message options dialog
     @Override
     public void onMessageOptionClicked(String command, int messagePosition) {
         switch(command) {

@@ -45,5 +45,6 @@
     <string name="delete">Delete</string>
 
     <string name="message_deleted">Message deleted</string>
+    <string name="image">Image</string>
 
 </resources>

@@ -81,16 +81,13 @@ public class AddContactsActivity extends AppCompatActivity {
             }
         });
 
-        //Todo tvac video on searching users
+        //Todo search users. Order by?
 
     }
 
     private void userSearch() {
         firebaseFirestore
                 .collection("Users")
-                //todo replace addsnapshot listener since we don't need real time
-                //replace with addOnCompleteListener
-                //https://firebase.google.com/docs/firestore/query-data/get-data
                 .addSnapshotListener(AddContactsActivity.this, new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {

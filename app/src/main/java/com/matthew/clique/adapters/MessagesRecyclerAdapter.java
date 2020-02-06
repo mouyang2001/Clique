@@ -1,6 +1,7 @@
 package com.matthew.clique.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.matthew.clique.FullscreenImage;
 import com.matthew.clique.R;
 import com.matthew.clique.fragments.MessageOptionsDialog;
 import com.matthew.clique.models.Message;
@@ -69,7 +71,7 @@ public class MessagesRecyclerAdapter
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         holder.setIsRecyclable(false);
-        Message message = this.messageList.get(position);
+        final Message message = this.messageList.get(position);
         String senderId = message.getSender();
 
         if (message.getImage()) {
@@ -96,11 +98,24 @@ public class MessagesRecyclerAdapter
                     }
                 });
 
+        holder.photoReceived.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendToFullscreenActivity(message.getMessage());
+            }
+        });
+
+        holder.photoSent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendToFullscreenActivity(message.getMessage());
+            }
+        });
+
         holder.messageField.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 loadMessageOptions(position);
-//                holder.messageField.setAlpha(0.8f);
                 return true;
             }
         });
@@ -109,10 +124,15 @@ public class MessagesRecyclerAdapter
             @Override
             public boolean onLongClick(View v) {
                 loadMessageOptions(position);
-//                holder.messageFieldUser.setAlpha(0.8f);
                 return true;
             }
         });
+    }
+
+    private void sendToFullscreenActivity(String uri) {
+        Intent intent = new Intent(context, FullscreenImage.class);
+        intent.putExtra("uri", uri);
+        context.startActivity(intent);
     }
 
     private void loadMessageOptions(int position) {
@@ -143,10 +163,10 @@ public class MessagesRecyclerAdapter
                 messageField.setVisibility(View.INVISIBLE);
                 photoSent.setVisibility(View.VISIBLE);
 
-                Glide.with(context).load(message.message).apply(photoSettings).into(photoSent);
+                Glide.with(context).load(message.getMessage()).apply(photoSettings).into(photoSent);
             } else {
                 photoReceived.setVisibility(View.VISIBLE);
-                Glide.with(context).load(message.message).apply(photoSettings).into(photoReceived);
+                Glide.with(context).load(message.getMessage()).apply(photoSettings).into(photoReceived);
             }
         }
 

@@ -83,7 +83,8 @@
                 app:layout_constraintStart_toEndOf="@+id/circleImageViewMessage"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_default_profile_image"
-                android:visibility="invisible" />
+                android:visibility="invisible"
+                android:contentDescription="@string/image"/>
 
             <ImageView
                 android:id="@+id/imageViewMessagePhotoUser"
@@ -96,7 +97,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_default_profile_image"
-                android:visibility="invisible"/>
+                android:visibility="invisible"
+                android:contentDescription="@string/image"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
