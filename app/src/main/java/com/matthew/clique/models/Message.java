@@ -5,7 +5,7 @@ import java.util.Date;
 public class Message {
     public String message_id, conversation_id, sender, message;
     public Date time_sent;
-    public Boolean deleted;
+    public Boolean deleted, image;
 
     public Message() {
 
@@ -16,13 +16,15 @@ public class Message {
                    String sender,
                    String message,
                    Date time_sent,
-                   Boolean deleted) {
+                   Boolean deleted,
+                   Boolean image) {
         this.message_id = message_id;
         this.conversation_id = conversation_id;
         this.sender = sender;
         this.message = message;
         this.time_sent = time_sent;
         this.deleted = deleted;
+        this.image = image;
     }
 
     public String getMessage_id() {return message_id;}
@@ -64,4 +66,8 @@ public class Message {
     public Boolean getDeleted() { return deleted; }
 
     public void setDeleted(Boolean deleted) { this.deleted = deleted; }
+
+    public Boolean getImage() { return image; }
+
+    public void setImage(Boolean image) { this.image = image; }
 }

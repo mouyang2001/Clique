@@ -60,7 +60,6 @@ public class MessageOptionsDialog extends BottomSheetDialogFragment {
         return view;
     }
 
-    //todo implement listeners for option menu;
     public interface MessageOptionsListener {
         void onMessageOptionClicked(String command, int messagePosition);
     }

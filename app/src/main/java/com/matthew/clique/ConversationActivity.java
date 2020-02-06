@@ -4,14 +4,22 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,11 +42,16 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.matthew.clique.R;
 import com.matthew.clique.adapters.MessagesRecyclerAdapter;
 import com.matthew.clique.fragments.MessageOptionsDialog;
+import com.matthew.clique.fragments.ProfileFragment;
 import com.matthew.clique.models.Conversation;
 import com.matthew.clique.models.Message;
+import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -59,13 +72,15 @@ public class ConversationActivity
 
     private String userId, conversationId, friendName;
 
-    private ImageView sendMessage;
+    private ImageView sendButton, cameraButton;
     private EditText messageField;
 
     private MessagesRecyclerAdapter messagesRecyclerAdapter;
     private List<Message> messageList;
     private List<Message> deletedMessageList;
     private RecyclerView messagesRecyclerView;
+
+    private StorageReference storage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +91,7 @@ public class ConversationActivity
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseFirestore = FirebaseFirestore.getInstance();
+        storage = FirebaseStorage.getInstance().getReference();
         userId = firebaseAuth.getUid();
         conversationId = getIntent().getStringExtra("conversation_id");
 
@@ -115,37 +131,70 @@ public class ConversationActivity
                     }
                 });
 
-//        firebaseFirestore
-//                .collection("Conversations/" + conversationId + "/Deleted_Messages")
-//                .orderBy("time_sent")
-//                .addSnapshotListener(ConversationActivity.this, new EventListener<QuerySnapshot>() {
-//                    @Override
-//                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-//                        if (!queryDocumentSnapshots.isEmpty()) {
-//                            for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
-//                                if (doc.getType() == DocumentChange.Type.ADDED) {
-//                                    Message message = doc.getDocument().toObject(Message.class);
-//                                    messagesRecyclerAdapter.deleteMessage(message);
-//                                }
-//                            }
-//                        }
-//                    }
-//                });
+        //todo deleted message realtime
 
         //Listeners
         messageField = findViewById(R.id.editTextMessage);
-        sendMessage = findViewById(R.id.imageViewSendButton);
-        sendMessage.setOnClickListener(new View.OnClickListener() {
+        cameraButton = findViewById(R.id.imageViewCameraSend);
+        sendButton = findViewById(R.id.imageViewSendButton);
+        sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String text = messageField.getText().toString().trim();
-                sendMessage(text);
+                sendMessage(text, false);
+            }
+        });
+
+        //todo send pics
+        cameraButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (ContextCompat.checkSelfPermission(ConversationActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(ConversationActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+                    }   else {
+                        CropImage.activity()
+                                .start(ConversationActivity.this);
+                    }
+                }
             }
         });
 
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == RESULT_OK) {
+                Uri resultUri = result.getUri();
+                String imageId = tk.generateUID(10);
+                StorageReference imagePath = storage
+                        .child("conversation_images")
+                        .child(conversationId)
+                        .child(imageId +".jpg" );
+                uploadImage(imagePath, resultUri);
+            }
+        }
+    }
+
+    private void uploadImage(StorageReference path, Uri uri) {
+        final StorageReference imagePath = path;
+        imagePath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                imagePath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        String imageUri = uri.toString();
+                        sendMessage(imageUri, true);
+                    }
+                });
+            }
+        });
+    }
     
-    private void sendMessage(String text) {
+    private void sendMessage(String text, Boolean isImage) {
         if (!text.isEmpty()) {
             messageField.getText().clear();
 
@@ -157,6 +206,7 @@ public class ConversationActivity
             messageMap.put("message", text);
             messageMap.put("time_sent", FieldValue.serverTimestamp());
             messageMap.put("deleted", false);
+            messageMap.put("image", isImage);
 
             firebaseFirestore
                     .collection("Conversations/" + conversationId + "/Messages")

@@ -123,7 +123,12 @@ public class ConversationsRecyclerAdapter extends RecyclerView.Adapter<Conversat
                             for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
                                 if (doc.getType() == DocumentChange.Type.ADDED) {
                                     Message message = doc.getDocument().toObject(Message.class);
-                                    holder.setPreview(message.getMessage(), convertDateToTime(message.getTime_sent()));
+                                    if (message.getImage()) {
+                                        holder.setPreview("IMAGE", convertDateToTime(message.getTime_sent()));
+                                    } else {
+                                        holder.setPreview(message.getMessage(), convertDateToTime(message.getTime_sent()));
+                                    }
+
                                 }
                             }
                         }
