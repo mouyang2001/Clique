@@ -1,6 +1,7 @@
 package com.matthew.clique.adapters;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -55,21 +57,9 @@ public class MessagesRecyclerAdapter
         return new MessagesRecyclerAdapter.ViewHolder(view);
     }
 
-    public void refreshData(List<Message> list) {
-        this.messageList = list;
-        notifyDataSetChanged();
-    }
-
     public void addMessage(Message message) {
         this.messageList.add(message);
         notifyItemInserted(this.messageList.size());
-    }
-
-    public void deleteMessage(Message message) {
-        if (message != null) {
-            int position = this.messageList.indexOf(message);
-            this.messageList.get(position).setDeleted(true);
-        }
     }
 
     public List<Message> getMessages() {
@@ -80,11 +70,14 @@ public class MessagesRecyclerAdapter
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         holder.setIsRecyclable(false);
         Message message = this.messageList.get(position);
-
         String senderId = message.getSender();
-        holder.setMessage(message);
 
-        holder.animation(senderId);
+        if (message.getImage()) {
+            holder.setPhoto(message);
+        } else {
+            holder.setMessage(message);
+            holder.animate(senderId);
+        }
 
         firebaseFirestore
                 .collection("Users")
@@ -94,8 +87,11 @@ public class MessagesRecyclerAdapter
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if (task.isSuccessful()) {
-                            String profileUri = task.getResult().get("profile_image").toString();
-                            holder.setProfileImage(profileUri);
+                            if (task.getResult() != null) {
+                                String profileUri = task.getResult().get("profile_image").toString();
+                                holder.setProfileImage(profileUri);
+                            }
+
                         }
                     }
                 });
@@ -128,59 +124,52 @@ public class MessagesRecyclerAdapter
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         private TextView messageField, messageFieldUser;
-        private ImageView profileImage, messagePhoto, userPhoto;
+        private ImageView profileImage, photoSent, photoReceived;
 
-        public ViewHolder(@NonNull View itemView) {
+        private ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             messageField = itemView.findViewById(R.id.textViewMessageText);
             messageFieldUser = itemView.findViewById(R.id.textViewMessageTextUser);
             profileImage = itemView.findViewById(R.id.circleImageViewMessage);
-            messagePhoto = itemView.findViewById(R.id.imageViewMessagePhoto);
-            userPhoto = itemView.findViewById(R.id.imageViewMessagePhotoUser);
+            photoReceived = itemView.findViewById(R.id.imageViewMessagePhoto);
+            photoSent = itemView.findViewById(R.id.imageViewMessagePhotoUser);
         }
 
-        public void setMessage(Message message) {
+        private void setPhoto(Message message) {
+            RequestOptions photoSettings = new RequestOptions().centerCrop().override(300, 300);
+            if (message.getSender().equals(userId)) {
+                profileImage.setVisibility(View.INVISIBLE);
+                messageField.setVisibility(View.INVISIBLE);
+                photoSent.setVisibility(View.VISIBLE);
+
+                Glide.with(context).load(message.message).apply(photoSettings).into(photoSent);
+            } else {
+                photoReceived.setVisibility(View.VISIBLE);
+                Glide.with(context).load(message.message).apply(photoSettings).into(photoReceived);
+            }
+        }
+
+        private void setMessage(Message message) {
+            String text = message.getMessage();
             if (message.getSender().equals(userId)) {
                 profileImage.setVisibility(View.INVISIBLE);
                 messageField.setVisibility(View.INVISIBLE);
                 messageFieldUser.setVisibility(View.VISIBLE);
 
-                messageSet(messageFieldUser, message);
+                messageFieldUser.setText(text);
             } else {
-                messageSet(messageField, message);
+                messageField.setText(text);
             }
         }
 
-        private void messageSet(TextView textField, Message message) {
-            if (message.getDeleted()) {
-                textField.setBackgroundResource(R.drawable.bg_message_deleted);
-                textField.setText(R.string.message_deleted);
-            } else {
-                if (message.getImage()) {
-                    textField.setVisibility(View.INVISIBLE);
-                    if (message.getSender().equals(userId)) {
-                        userPhoto.setVisibility(View.VISIBLE);
-                        Glide.with(context).load(message.message)
-                                .override(200, 200).into(userPhoto);
-                    } else {
-                        messagePhoto.setVisibility(View.VISIBLE);
-                        Glide.with(context).load(message.message)
-                                .override(200, 200).into(messagePhoto);
-                    }
-                } else {
-                    textField.setText(message.getMessage());
-                }
-            }
-        }
-
-        public void setProfileImage(String profileUri) {
+        private void setProfileImage(String profileUri) {
             if (profileUri != null) {
                 Glide.with(context).load(profileUri).into(profileImage);
             }
         }
 
-        private void animation(String senderId) {
+        private void animate(String senderId) {
             if (senderId.equals(userId)) {
                 messageFieldUser.setAnimation(AnimationUtils.loadAnimation(context, R.anim.fade_transition));
             } else {
