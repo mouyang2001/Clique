@@ -26,7 +26,7 @@ public class FullscreenImage extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        image = findViewById(R.id.imageViewFullscreen);
+        image = findViewById(R.id.photoViewFullscreen);
 
         String uri = getIntent().getStringExtra("uri");
 

@@ -8,17 +8,6 @@
     android:background="@android:color/black">
 
 
-    <ImageView
-        android:id="@+id/imageViewFullscreen"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbarFullscreenImage"
-        app:srcCompat="@drawable/ic_default_profile_image"
-        android:contentDescription="@string/image"/>
-
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbarFullscreenImage"
         android:layout_width="0dp"
@@ -29,4 +18,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <com.github.chrisbanes.photoview.PhotoView
+        android:id="@+id/photoViewFullscreen"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbarFullscreenImage" />
 </androidx.constraintlayout.widget.ConstraintLayout>
