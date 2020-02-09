@@ -101,14 +101,14 @@ public class MessagesRecyclerAdapter
         holder.photoReceived.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendToFullscreenActivity(message.getMessage());
+                sendToFullscreenActivity(message.getMessage(), message.getMessage_id());
             }
         });
 
         holder.photoSent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendToFullscreenActivity(message.getMessage());
+                sendToFullscreenActivity(message.getMessage(), message.getMessage_id());
             }
         });
 
@@ -129,9 +129,10 @@ public class MessagesRecyclerAdapter
         });
     }
 
-    private void sendToFullscreenActivity(String uri) {
+    private void sendToFullscreenActivity(String uri, String id) {
         Intent intent = new Intent(context, FullscreenImage.class);
         intent.putExtra("uri", uri);
+        intent.putExtra("image_id", id);
         context.startActivity(intent);
     }
 
