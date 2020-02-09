@@ -14,9 +14,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -43,6 +45,8 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter<UsersRecyclerAdap
 
     private String userId;
 
+    private String userFirstName, userLastName;
+
     public UsersRecyclerAdapter(List<User> usersList) {
         this.usersList = usersList;
     }
@@ -58,6 +62,18 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter<UsersRecyclerAdap
 
         userId = firebaseAuth.getUid();
 
+        firebaseFirestore
+                .collection("Users")
+                .document(userId)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        userFirstName = documentSnapshot.get("first_name").toString();
+                        userLastName = documentSnapshot.get("last_name").toString();
+                    }
+                });
+
         return new UsersRecyclerAdapter.ViewHolder(view);
     }
 
@@ -67,8 +83,8 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter<UsersRecyclerAdap
         holder.setIsRecyclable(false);
 
         final String friendId = usersList.get(position).getUser_id();
-        String firstName = usersList.get(position).getFirst_name();
-        String lastName = usersList.get(position).getLast_name();
+        final String firstName = usersList.get(position).getFirst_name();
+        final String lastName = usersList.get(position).getLast_name();
         String profileImage = usersList.get(position).getProfile_image();
         String fullName = firstName + lastName;
         holder.setUserData(fullName, profileImage);
@@ -102,10 +118,14 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter<UsersRecyclerAdap
                 HashMap<String, Object> userMap = new HashMap<>();
                 userMap.put("user_id", userId);
                 userMap.put("time_added", timestamp);
+                userMap.put("friend_first_name", firstName);
+                userMap.put("friend_last_name", lastName);
 
                 HashMap<String, Object> friendMap = new HashMap<>();
                 friendMap.put("user_id", friendId);
                 friendMap.put("time_added", timestamp);
+                friendMap.put("friend_first_name", userFirstName);
+                friendMap.put("friend_last_name", userLastName);
 
                 firebaseFirestore
                         .collection("Users/" + userId + "/Friends")

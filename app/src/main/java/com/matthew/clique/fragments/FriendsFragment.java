@@ -14,9 +14,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -72,35 +74,32 @@ public class FriendsFragment extends Fragment {
 
         firebaseFirestore
                 .collection("Users/" + userId + "/Friends")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful() && !task.getResult().isEmpty()) {
-
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                friendsListRaw.add(document.getId());
-                            }
-
-                            //this has to be nested inside
-                            firebaseFirestore
-                                    .collection("Users")
-                                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                        @Override
-                                        public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                                            if (!queryDocumentSnapshots.isEmpty()) {
-                                                for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
-                                                    for (String id : friendsListRaw) {
-                                                        if (doc.getDocument().getId().equals(id)) {
-                                                            User user = doc.getDocument().toObject(User.class);
-                                                            friendsList.add(user);
-                                                            friendsRecyclerAdapter.notifyDataSetChanged();
-                                                        }
+                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                        if (!queryDocumentSnapshots.isEmpty()) {
+                            if (!queryDocumentSnapshots.isEmpty()) {
+                                for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
+                                    if (doc.getType() == DocumentChange.Type.ADDED) {
+                                        final String id = doc.getDocument().getId();
+                                        firebaseFirestore
+                                                .collection("Users")
+                                                .document(id)
+                                                .get()
+                                                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                    @Override
+                                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                        User user = documentSnapshot.toObject(User.class);
+                                                        friendsList.add(user);
+                                                        friendsRecyclerAdapter.notifyDataSetChanged();
+                                                        //todo notify inserted so that you can see who added you!
                                                     }
-                                                }
-                                            }
-                                        }
-                                    });
+                                                });
+                                    }
+                                }
+
+
+                            }
                         }
                     }
                 });
