@@ -53,8 +53,10 @@ import com.matthew.clique.models.Conversation;
 import com.matthew.clique.models.Message;
 import com.theartofdev.edmodo.cropper.CropImage;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -197,13 +199,15 @@ public class ConversationActivity
         if (!text.isEmpty()) {
             messageField.getText().clear();
 
+            FieldValue timestamp = FieldValue.serverTimestamp();
+
             String messageId = tk.generateUID(10);
             HashMap<String, Object> messageMap = new HashMap<>();
             messageMap.put("message_id", messageId);
             messageMap.put("conversation_id", conversationId);
             messageMap.put("sender", userId);
             messageMap.put("message", text);
-            messageMap.put("time_sent", FieldValue.serverTimestamp());
+            messageMap.put("time_sent", timestamp);
             messageMap.put("deleted", false);
             messageMap.put("image", isImage);
 

@@ -158,6 +158,7 @@ public class FriendsRecyclerAdapter extends RecyclerView.Adapter<FriendsRecycler
         conversation.put("conversation_id", conversationUID);
         conversation.put("time_created", timestamp);
         conversation.put("users", usersList);
+        conversation.put("latest_message", timestamp);
 
         Map<String, Object> conversationMeta = new HashMap<>();
         conversationMeta.put("conversation_id", conversationUID);

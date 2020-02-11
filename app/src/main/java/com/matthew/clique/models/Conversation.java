@@ -10,16 +10,26 @@ public class Conversation {
 
     String conversation_id;
     Date time_created;
+    Date latest_message;
     List<String> users;
 
     public Conversation() {
 
     }
 
-    public Conversation(String conversation_id, Date time_created, List<String> users) {
+    public Conversation(String conversation_id, Date time_created, Date latest_message, List<String> users) {
         this.conversation_id = conversation_id;
         this.time_created = time_created;
         this.users = users;
+        this.latest_message = latest_message;
+    }
+
+    public Date getLatest_message() {
+        return latest_message;
+    }
+
+    public void setLatest_message(Date latest_message) {
+        this.latest_message = latest_message;
     }
 
     public String getConversation_id() {

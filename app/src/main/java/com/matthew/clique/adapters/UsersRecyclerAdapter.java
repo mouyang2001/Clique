@@ -118,15 +118,16 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter<UsersRecyclerAdap
                 HashMap<String, Object> userMap = new HashMap<>();
                 userMap.put("user_id", userId);
                 userMap.put("time_added", timestamp);
-                userMap.put("friend_first_name", firstName);
-                userMap.put("friend_last_name", lastName);
+                userMap.put("friend_first_name", userFirstName);
+                userMap.put("friend_last_name", userLastName);
 
                 HashMap<String, Object> friendMap = new HashMap<>();
                 friendMap.put("user_id", friendId);
                 friendMap.put("time_added", timestamp);
-                friendMap.put("friend_first_name", userFirstName);
-                friendMap.put("friend_last_name", userLastName);
+                friendMap.put("friend_first_name", firstName);
+                friendMap.put("friend_last_name", lastName);
 
+                //user get friends info
                 firebaseFirestore
                         .collection("Users/" + userId + "/Friends")
                         .document(friendId)
@@ -141,6 +142,7 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter<UsersRecyclerAdap
                             }
                         });
 
+                //friend gets users info
                 firebaseFirestore
                         .collection("Users/" + friendId + "/Friends")
                         .document(userId)
