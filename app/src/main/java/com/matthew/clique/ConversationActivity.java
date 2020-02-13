@@ -215,6 +215,11 @@ public class ConversationActivity
                     .collection("Conversations/" + conversationId + "/Messages")
                     .document(messageId)
                     .set(messageMap);
+
+            firebaseFirestore
+                    .collection("Conversations/")
+                    .document(conversationId)
+                    .update("latest_message", timestamp);
         }
     }
 

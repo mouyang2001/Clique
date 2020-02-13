@@ -180,6 +180,16 @@ public class FriendsRecyclerAdapter extends RecyclerView.Adapter<FriendsRecycler
                 .document(conversationUID);
         batch.set(conversationReference, conversation);
 
+        DocumentReference userConversationReference = firebaseFirestore
+                .collection("Users/" + userId + "/Conversations")
+                .document(conversationUID);
+        batch.set(userConversationReference, conversation);
+
+        DocumentReference friendConversationReference = firebaseFirestore
+                .collection("Users/" + friendId + "/Conversations")
+                .document(conversationUID);
+        batch.set(friendConversationReference, conversation);
+
         batch.commit();
     }
 }

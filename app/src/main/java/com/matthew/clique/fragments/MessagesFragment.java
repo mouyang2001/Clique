@@ -75,44 +75,59 @@ public class MessagesFragment extends Fragment {
         conversationIdList= new ArrayList<>();
 
         firebaseFirestore
-                .collection("Conversations")
+                .collection("Users/" + userId + "/Conversations")
+                .orderBy("latest_message")
                 .addSnapshotListener(MetadataChanges.INCLUDE, new EventListener<QuerySnapshot>() {
                     @Override
-                    public void onEvent(@Nullable final QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                        firebaseFirestore
-                                .collection("Users/" + userId + "/Friends")
-                                .get()
-                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                        if (task.isSuccessful() && task.getResult() != null  && !queryDocumentSnapshots.isEmpty()) {
-                                            //get user's conversations
-                                            for (QueryDocumentSnapshot doc : task.getResult()) {
-                                                if (doc.get("conversation_id") != null) {
-                                                    String conversationId = doc.get("conversation_id").toString();
-                                                    conversationIdList.add(conversationId);
-                                                }
-                                            }
-
-                                            //get conversations with same id
-                                            for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
-                                                String documentId = doc.getDocument().getId();
-                                                for (String conversationId : conversationIdList) {
-                                                    if (documentId.equals(conversationId)) {
-                                                        Conversation conversation = doc.getDocument().toObject(Conversation.class);
-                                                        conversationList.add(conversation);
-                                                    }
-                                                }
-                                            }
-
-                                            conversationsRecyclerAdapter.loadConversations(conversationList);
-
-                                        }
-                                    }
-                                });
-
+                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                        if (!queryDocumentSnapshots.isEmpty()) {
+                            for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
+                                Conversation conversation = doc.getDocument().toObject(Conversation.class);
+                                conversationList.add(conversation);
+                                conversationsRecyclerAdapter.notifyDataSetChanged();
+                            }
+                        }
                     }
                 });
+
+//        firebaseFirestore
+//                .collection("Conversations")
+//                .addSnapshotListener(MetadataChanges.INCLUDE, new EventListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onEvent(@Nullable final QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+//                        firebaseFirestore
+//                                .collection("Users/" + userId + "/Friends")
+//                                .get()
+//                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//                                    @Override
+//                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                                        if (task.isSuccessful() && task.getResult() != null  && !queryDocumentSnapshots.isEmpty()) {
+//                                            //get user's conversations
+//                                            for (QueryDocumentSnapshot doc : task.getResult()) {
+//                                                if (doc.get("conversation_id") != null) {
+//                                                    String conversationId = doc.get("conversation_id").toString();
+//                                                    conversationIdList.add(conversationId);
+//                                                }
+//                                            }
+//
+//                                            //get conversations with same id
+//                                            for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
+//                                                String documentId = doc.getDocument().getId();
+//                                                for (String conversationId : conversationIdList) {
+//                                                    if (documentId.equals(conversationId)) {
+//                                                        Conversation conversation = doc.getDocument().toObject(Conversation.class);
+//                                                        conversationList.add(conversation);
+//                                                        conversationsRecyclerAdapter.notifyDataSetChanged();
+//                                                    }
+//                                                }
+//                                            }
+//
+//                                        }
+//                                    }
+//                                });
+//
+//                    }
+//                });
 
         return view;
     }
