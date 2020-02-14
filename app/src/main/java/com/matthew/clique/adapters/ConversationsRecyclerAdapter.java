@@ -78,13 +78,7 @@ public class ConversationsRecyclerAdapter extends RecyclerView.Adapter<Conversat
         return new ConversationsRecyclerAdapter.ViewHolder(view);
     }
 
-    public void loadConversations(List<Conversation> list) {
-        this.conversationsList = list;
-        notifyDataSetChanged();
-    }
-
     @Override
-    //always works with current user
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         holder.setIsRecyclable(false);
 
@@ -193,7 +187,7 @@ public class ConversationsRecyclerAdapter extends RecyclerView.Adapter<Conversat
         }
 
         public void setPreview(String text, String time) {
-            if (text != null || time != null){
+            if (text != null && time != null){
                 String preview = text + "   " + time;
                 conversationPreviewField.setText(preview);
             }

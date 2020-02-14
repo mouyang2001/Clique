@@ -49,5 +49,7 @@
 
     <string name="save">Save</string>
     <string name="info">Info</string>
+    <string name="bio_content">Something about you</string>
+    <string name="bio">Bio</string>
 
 </resources>

@@ -4,4 +4,6 @@
     <item
         android:title="@string/sign_out"
         android:id="@+id/itemSignOut"/>
+    <item android:title="@string/bio"
+        android:id="@+id/itemChangeBio"/>
 </menu>
