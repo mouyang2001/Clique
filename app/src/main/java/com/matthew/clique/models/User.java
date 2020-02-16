@@ -1,17 +1,18 @@
 package com.matthew.clique.models;
 
 public class User {
-    public String user_id, first_name, last_name, profile_image;
+    public String user_id, first_name, last_name, profile_image, bio;
 
     public User() {
 
     }
 
-    public User(String userId, String first_name, String last_name, String profile_image) {
+    public User(String userId, String first_name, String last_name, String profile_image, String bio) {
         this.first_name = first_name;
         this.last_name = last_name;
         this.user_id = user_id;
         this.profile_image = profile_image;
+        this.bio = bio;
     }
 
     public String getFirst_name() {
@@ -37,4 +38,12 @@ public class User {
     public String getProfile_image() {return profile_image;}
 
     public void setProfile_image(String profile_image) {this.profile_image = profile_image;}
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
 }

@@ -143,6 +143,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.itemAddFriend:
                 sendTo(MainActivity.this, AddContactsActivity.class, false);
                 return true;
+            case R.id.itemChangeBio:
+                sendTo(MainActivity.this, BioActivity.class, false);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

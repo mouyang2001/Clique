@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,7 +34,10 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.matthew.clique.MainActivity;
 import com.matthew.clique.R;
+import com.matthew.clique.models.User;
 import com.theartofdev.edmodo.cropper.CropImage;
+
+import org.w3c.dom.Text;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -45,7 +50,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private CircleImageView profileImage;
-    private TextView profileNameField;
+    private TextView profileNameField, bioField;
     private ProgressBar progressBar;
 
     private FirebaseFirestore firebaseFirestore;
@@ -55,8 +60,6 @@ public class ProfileFragment extends Fragment {
     private String userName;
     private String userId;
 
-    private Uri profileImageUri = null;
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -65,6 +68,7 @@ public class ProfileFragment extends Fragment {
         profileImage = view.findViewById(R.id.circleImageViewProfileImage);
         profileNameField = view.findViewById(R.id.textViewProfileName);
         progressBar = view.findViewById(R.id.progressBarProfile);
+        bioField = view.findViewById(R.id.textViewProfileBio);
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseFirestore = FirebaseFirestore.getInstance();
@@ -76,22 +80,6 @@ public class ProfileFragment extends Fragment {
         userId = firebaseAuth.getUid();
 
         final MainActivity mainActivity = (MainActivity)getActivity();
-        firebaseFirestore
-                .collection("Users")
-                .document(firebaseAuth.getUid())
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (task.isSuccessful()) {
-                            DocumentSnapshot document = task.getResult();
-                            String firstName = document.get("first_name").toString();
-                            String lastName = document.get("last_name").toString();
-                            userName = firstName + " " + lastName;
-                            profileNameField.setText(userName);
-                        }
-                    }
-                });
 
         firebaseFirestore
                 .collection("Users")
@@ -100,14 +88,54 @@ public class ProfileFragment extends Fragment {
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if (documentSnapshot.get("profile_image") != null) {
-                            String profileImageUri = documentSnapshot.get("profile_image").toString();
+                        User user = documentSnapshot.toObject(User.class);
+
+                        String profileImageUri = user.getProfile_image();
+                        if (profileImageUri != null) {
                             Glide.with(getContext()).load(profileImageUri).into(profileImage);
                         }
 
+                        String name = user.getFirst_name() + " " + user.getLast_name();
+                        profileNameField.setText(name);
 
+                        if (user.getBio() != null) {
+                            bioField.setText(user.getBio());
+                        }
                     }
                 });
+
+//        firebaseFirestore
+//                .collection("Users")
+//                .document(userId)
+//                .get()
+//                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+//                        if (task.isSuccessful()) {
+//                            DocumentSnapshot document = task.getResult();
+//                            String firstName = document.get("first_name").toString();
+//                            String lastName = document.get("last_name").toString();
+//                            userName = firstName + " " + lastName;
+//                            profileNameField.setText(userName);
+//                        }
+//                    }
+//                });
+//
+//        firebaseFirestore
+//                .collection("Users")
+//                .document(userId)
+//                .get()
+//                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+//                    @Override
+//                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+//                        if (documentSnapshot.get("profile_image") != null) {
+//                            String profileImageUri = documentSnapshot.get("profile_image").toString();
+//                            Glide.with(getContext()).load(profileImageUri).into(profileImage);
+//                        }
+//
+//
+//                    }
+//                });
 
 
         profileImage.setOnClickListener(new View.OnClickListener() {
