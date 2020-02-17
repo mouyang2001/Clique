@@ -32,6 +32,7 @@ import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.matthew.clique.BackdropActivity;
 import com.matthew.clique.MainActivity;
 import com.matthew.clique.R;
 import com.matthew.clique.models.User;
@@ -50,6 +51,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private CircleImageView profileImage;
+    private ImageView profileBackdrop;
     private TextView profileNameField, bioField;
     private ProgressBar progressBar;
 
@@ -66,6 +68,7 @@ public class ProfileFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
         profileImage = view.findViewById(R.id.circleImageViewProfileImage);
+        profileBackdrop = view.findViewById(R.id.imageViewProfileBackdrop);
         profileNameField = view.findViewById(R.id.textViewProfileName);
         progressBar = view.findViewById(R.id.progressBarProfile);
         bioField = view.findViewById(R.id.textViewProfileBio);
@@ -95,6 +98,11 @@ public class ProfileFragment extends Fragment {
                             Glide.with(getContext()).load(profileImageUri).into(profileImage);
                         }
 
+                        String backdropImageUri = user.getBackdrop_image();
+                        if (backdropImageUri != null) {
+                            Glide.with(getContext()).load(backdropImageUri).centerCrop().into(profileBackdrop);
+                        }
+
                         String name = user.getFirst_name() + " " + user.getLast_name();
                         profileNameField.setText(name);
 
@@ -104,39 +112,13 @@ public class ProfileFragment extends Fragment {
                     }
                 });
 
-//        firebaseFirestore
-//                .collection("Users")
-//                .document(userId)
-//                .get()
-//                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                        if (task.isSuccessful()) {
-//                            DocumentSnapshot document = task.getResult();
-//                            String firstName = document.get("first_name").toString();
-//                            String lastName = document.get("last_name").toString();
-//                            userName = firstName + " " + lastName;
-//                            profileNameField.setText(userName);
-//                        }
-//                    }
-//                });
-//
-//        firebaseFirestore
-//                .collection("Users")
-//                .document(userId)
-//                .get()
-//                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-//                    @Override
-//                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-//                        if (documentSnapshot.get("profile_image") != null) {
-//                            String profileImageUri = documentSnapshot.get("profile_image").toString();
-//                            Glide.with(getContext()).load(profileImageUri).into(profileImage);
-//                        }
-//
-//
-//                    }
-//                });
-
+        profileBackdrop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), BackdropActivity.class);
+                getContext().startActivity(intent);
+            }
+        });
 
         profileImage.setOnClickListener(new View.OnClickListener() {
             @Override
