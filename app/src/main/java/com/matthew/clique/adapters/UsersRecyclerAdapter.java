@@ -1,7 +1,6 @@
 package com.matthew.clique.adapters;
 
 import android.content.Context;
-import android.provider.CalendarContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,27 +8,21 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.matthew.clique.AddContactsActivity;
 import com.matthew.clique.R;
 import com.matthew.clique.models.User;
 
-import java.sql.Time;
 import java.util.HashMap;
 import java.util.List;
 
@@ -78,7 +71,6 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter<UsersRecyclerAdap
     }
 
     @Override
-    //always works with current user
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         holder.setIsRecyclable(false);
 
@@ -86,7 +78,7 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter<UsersRecyclerAdap
         final String firstName = usersList.get(position).getFirst_name();
         final String lastName = usersList.get(position).getLast_name();
         String profileImage = usersList.get(position).getProfile_image();
-        String fullName = firstName + lastName;
+        String fullName = firstName + " " + lastName;
         holder.setUserData(fullName, profileImage);
 
         firebaseFirestore

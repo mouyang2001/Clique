@@ -14,12 +14,14 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.matthew.clique.adapters.UsersRecyclerAdapter;
@@ -77,7 +79,8 @@ public class AddContactsActivity extends AppCompatActivity {
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                userSearch();
+                String search = nameField.getText().toString().trim();
+                userSearch(search);
             }
         });
 
@@ -85,27 +88,25 @@ public class AddContactsActivity extends AppCompatActivity {
 
     }
 
-    private void userSearch() {
+    private void userSearch(String search) {
         firebaseFirestore
                 .collection("Users")
-                .addSnapshotListener(AddContactsActivity.this, new EventListener<QuerySnapshot>() {
+                .orderBy("first_name")
+                .startAt(search)
+                .endAt(search + "\uf8ff")
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
-                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                   if (!queryDocumentSnapshots.isEmpty()) {
-                       for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        usersList.clear();
+                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                            if (!document.getId().equals(userId)) {
+                                User user = document.toObject(User.class);
+                                usersList.add(user);
+                            }
 
-                           if (doc.getType() == DocumentChange.Type.ADDED) {
-                               String documentId = doc.getDocument().getId();
-
-                               if (!documentId.equals(userId)) {
-                                   User user = doc.getDocument().toObject(User.class);
-                                   usersList.add(user);
-                                   usersRecyclerAdapter.notifyDataSetChanged();
-                               }
-
-                           }
-                       }
-                   }
+                        }
+                        usersRecyclerAdapter.notifyDataSetChanged();
                     }
                 });
     }
