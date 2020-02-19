@@ -5,18 +5,18 @@
         android:title="@string/call"
         android:id="@+id/itemCall"
         android:icon="@drawable/ic_call"
-        app:showAsAction="always">
+        app:showAsAction="ifRoom">
     </item>
     <item
         android:title="@string/video_call"
         android:id="@+id/itemVideoCall"
         android:icon="@drawable/ic_videocam"
-        app:showAsAction="always">
+        app:showAsAction="ifRoom">
     </item>
     <item
         android:title="@string/video_call"
         android:id="@+id/itemSettings"
         android:icon="@drawable/ic_settings"
-        app:showAsAction="always">
+        app:showAsAction="ifRoom">
     </item>
 </menu>
