@@ -24,11 +24,15 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.matthew.clique.fragments.FriendsFragment;
 import com.matthew.clique.fragments.MessagesFragment;
 import com.matthew.clique.fragments.ProfileFragment;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -87,6 +91,22 @@ public class MainActivity extends AppCompatActivity {
                                 DocumentSnapshot document = task.getResult();
                                 if (!document.exists()) {
                                     sendTo(MainActivity.this, SetupActivity.class, true);
+                                } else {
+                                    //token id has to always update with the user's current phone
+                                    firebaseAuth
+                                            .getCurrentUser()
+                                            .getIdToken(true)
+                                            .addOnSuccessListener(new OnSuccessListener<GetTokenResult>() {
+                                                @Override
+                                                public void onSuccess(GetTokenResult getTokenResult) {
+                                                    String tokenId = getTokenResult.getToken();
+
+                                                    Map<String, Object> tokenMap = new HashMap<>();
+                                                    tokenMap.put("token_id", tokenId);
+
+                                                    firebaseFirestore.collection("Users").document(userId).update(tokenMap);
+                                                }
+                                            });
                                 }
                             } else {
                                 String e = task.getException().getMessage();

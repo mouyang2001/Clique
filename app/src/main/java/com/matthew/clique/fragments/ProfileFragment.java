@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -26,6 +27,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
@@ -39,6 +41,9 @@ import com.matthew.clique.models.User;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import org.w3c.dom.Text;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -62,6 +67,8 @@ public class ProfileFragment extends Fragment {
     private String userName;
     private String userId;
 
+    private Button updateTokenButton;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -72,6 +79,7 @@ public class ProfileFragment extends Fragment {
         profileNameField = view.findViewById(R.id.textViewProfileName);
         progressBar = view.findViewById(R.id.progressBarProfile);
         bioField = view.findViewById(R.id.textViewProfileBio);
+        updateTokenButton = view.findViewById(R.id.buttonUpdateTokenId);
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseFirestore = FirebaseFirestore.getInstance();
@@ -133,6 +141,27 @@ public class ProfileFragment extends Fragment {
 
                     }
                 }
+            }
+        });
+
+        updateTokenButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                firebaseAuth
+                        .getCurrentUser()
+                        .getIdToken(true)
+                        .addOnSuccessListener(new OnSuccessListener<GetTokenResult>() {
+                            @Override
+                            public void onSuccess(GetTokenResult getTokenResult) {
+                                String tokenId = getTokenResult.getToken();
+
+                                Map<String, Object> tokenMap = new HashMap<>();
+                                tokenMap.put("token_id", tokenId);
+
+                                firebaseFirestore.collection("Users").document(userId).update(tokenMap);
+                                Toast.makeText(getContext(), "Force update success", Toast.LENGTH_LONG).show();
+                            }
+                        });
             }
         });
 
