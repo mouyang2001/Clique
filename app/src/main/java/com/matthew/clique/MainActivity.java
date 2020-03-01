@@ -26,6 +26,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.matthew.clique.fragments.FriendsFragment;
 import com.matthew.clique.fragments.MessagesFragment;
@@ -93,20 +94,7 @@ public class MainActivity extends AppCompatActivity {
                                     sendTo(MainActivity.this, SetupActivity.class, true);
                                 } else {
                                     //token id has to always update with the user's current phone
-                                    firebaseAuth
-                                            .getCurrentUser()
-                                            .getIdToken(true)
-                                            .addOnSuccessListener(new OnSuccessListener<GetTokenResult>() {
-                                                @Override
-                                                public void onSuccess(GetTokenResult getTokenResult) {
-                                                    String tokenId = getTokenResult.getToken();
-
-                                                    Map<String, Object> tokenMap = new HashMap<>();
-                                                    tokenMap.put("token_id", tokenId);
-
-                                                    firebaseFirestore.collection("Users").document(userId).update(tokenMap);
-                                                }
-                                            });
+                                    updateToken();
                                 }
                             } else {
                                 String e = task.getException().getMessage();
@@ -158,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
                 sendTo(MainActivity.this, NewMessage.class, false);
                 return true;
             case R.id.itemSignOut:
-                sendTo(MainActivity.this, LoginActivity.class, true);
+                signOut();
                 return true;
             case R.id.itemAddFriend:
                 sendTo(MainActivity.this, AddContactsActivity.class, false);
@@ -246,6 +234,38 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(context, activity);
         startActivity(intent);
         if (finish) {finish();}
+    }
+
+    private void signOut() {
+        dumpToken();
+        sendTo(MainActivity.this, LoginActivity.class, true);
+    }
+
+    private void updateToken() {
+        firebaseAuth
+                .getCurrentUser()
+                .getIdToken(true)
+                .addOnSuccessListener(new OnSuccessListener<GetTokenResult>() {
+                    @Override
+                    public void onSuccess(GetTokenResult getTokenResult) {
+                        String tokenId = getTokenResult.getToken();
+
+                        Map<String, Object> tokenMap = new HashMap<>();
+                        tokenMap.put("token_id", tokenId);
+
+                        firebaseFirestore.collection("Users").document(userId).update(tokenMap);
+                    }
+                });
+    }
+
+    private void dumpToken() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("token_id", FieldValue.delete());
+
+        firebaseFirestore
+                .collection("Users")
+                .document(userId)
+                .update(map);
     }
 
     public boolean isConnected() {
